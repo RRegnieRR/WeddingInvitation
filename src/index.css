@@ -1,0 +1,173 @@
+@import url("https://fonts.googleapis.com/css2?family=Corinthia:wght@400;700&family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    color-scheme: light;
+    background: #fffefc;
+  }
+
+  body {
+    @apply bg-ivory font-body text-mocha antialiased;
+    background:
+      linear-gradient(180deg, #fffefc 0%, #fffefb 56%, #fffdfa 100%);
+    overscroll-behavior-y: none;
+    text-rendering: optimizeLegibility;
+  }
+
+  body,
+  #root {
+    min-height: 100%;
+  }
+
+  ::selection {
+    background-color: rgb(215 195 167 / 0.6);
+    color: #5d4636;
+  }
+}
+
+@layer components {
+  .section-shell {
+    @apply mx-auto w-[min(calc(100%-1.5rem),1180px)] px-2 sm:w-[min(calc(100%-2rem),1180px)] sm:px-4;
+  }
+
+  .section-space {
+    @apply py-20 md:py-28;
+  }
+
+  .eyebrow {
+    @apply mb-4 text-center font-body text-[0.72rem] font-semibold uppercase tracking-[0.45em] md:text-xs;
+    color: rgb(142 117 96 / 0.75);
+  }
+
+  .section-title {
+    @apply font-serif text-4xl font-semibold leading-none text-mocha md:text-6xl;
+  }
+
+  .section-subtitle {
+    @apply mt-4 max-w-3xl text-center font-body text-[0.98rem] leading-8 md:text-lg;
+    color: rgb(93 70 54 / 0.72);
+  }
+
+  .glass-panel {
+    @apply rounded-[32px] border shadow-editorial;
+    border-color: rgb(255 255 255 / 0.5);
+    background-color: rgb(255 255 255 / 0.92);
+  }
+
+  .editorial-button {
+    @apply inline-flex items-center justify-center rounded-full border border-transparent px-6 py-3 text-[0.72rem] font-semibold uppercase tracking-[0.26em] transition duration-300;
+  }
+
+  .editorial-button-primary {
+    @apply editorial-button bg-mocha text-white hover:-translate-y-0.5 hover:bg-[#4e392a];
+  }
+
+  .editorial-button-secondary {
+    @apply editorial-button border text-mocha hover:-translate-y-0.5;
+    border-color: rgb(93 70 54 / 0.15);
+    background-color: rgb(255 255 255 / 0.78);
+  }
+
+  .editorial-button-secondary:hover {
+    background-color: rgb(255 255 255 / 0.8);
+  }
+
+  .field-shell {
+    @apply rounded-[24px] border px-4 py-4 shadow-soft transition;
+    border-color: rgb(219 201 183 / 0.6);
+    background-color: rgb(255 255 255 / 0.92);
+  }
+
+  .field-shell:focus-within {
+    border-color: rgb(142 117 96 / 0.5);
+    background-color: rgb(255 255 255);
+  }
+
+  .field-label {
+    @apply mb-2 block text-[0.68rem] font-semibold uppercase tracking-[0.24em];
+    color: rgb(142 117 96 / 0.85);
+  }
+
+  .field-input {
+    @apply w-full bg-transparent font-body text-[0.98rem] text-mocha outline-none;
+  }
+
+  .field-input::placeholder {
+    color: rgb(93 70 54 / 0.35);
+  }
+
+  .hero-intro {
+    animation: hero-fade-up 1.05s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .reveal-block,
+  .reveal-item {
+    opacity: 0;
+    transform: translate3d(0, 26px, 0);
+    transition:
+      opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .reveal-block.is-visible,
+  .reveal-item.is-visible {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+
+  .reveal-item {
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+}
+
+@layer utilities {
+  .paper-mask {
+    background-image:
+      linear-gradient(180deg, rgba(255, 255, 254, 0.998), rgba(255, 254, 252, 0.992)),
+      url("/assets/paper-texture.svg");
+  }
+
+  .watercolor-edge::before {
+    content: "";
+    position: absolute;
+    inset: -12%;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(243, 234, 225, 0.16), transparent 28%),
+      radial-gradient(circle at 80% 14%, rgba(246, 240, 233, 0.08), transparent 22%),
+      radial-gradient(circle at 68% 75%, rgba(247, 242, 236, 0.08), transparent 20%);
+    pointer-events: none;
+  }
+
+  .editorial-divider {
+    background:
+      linear-gradient(90deg, transparent, rgba(128, 100, 73, 0.36), transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-intro,
+  .reveal-block,
+  .reveal-item {
+    animation: none;
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+@keyframes hero-fade-up {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 24px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
