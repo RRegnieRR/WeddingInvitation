@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Sitio web romántico de boda para Regnier y Alizee."
+    />
+    <title>Regnier & Alizee | Invitación de Boda</title>
+    <link rel="stylesheet" href="./styles/main.css" />
+    <script defer src="./scripts/main.js"></script>
+  </head>
+  <body>
+    <audio
+      id="site-audio"
+      src="./Joy%20in%20the%20Little%20Things.mp3"
+      preload="auto"
+      loop
+      playsinline
+    ></audio>
+
+    <button
+      id="audio-toggle"
+      class="audio-toggle"
+      type="button"
+      aria-label="Pausar música"
+      aria-pressed="true"
+    >
+      <span class="audio-toggle__icon" aria-hidden="true">
+        <span></span>
+        <span></span>
+      </span>
+    </button>
+
+    <header class="hero" id="top">
+      <picture class="hero__media">
+        <source
+          media="(prefers-color-scheme: dark)"
+          srcset="./assets/hero-image-dark.png"
+        />
+        <img src="./assets/hero-image.png" alt="" />
+      </picture>
+      <div class="hero__overlay"></div>
+      <div class="hero__content">
+        <div class="hero__line"></div>
+        <p class="hero__eyebrow">Nos Casamos</p>
+        <div class="hero__names">
+          <span>Regnier</span>
+          <span class="hero__ampersand">&amp;</span>
+          <span>Alizee</span>
+        </div>
+        <div class="hero__divider">
+          <span></span>
+          <b>✦</b>
+          <span></span>
+        </div>
+      </div>
+      <a class="hero__cta" href="#rsvp">Confirmar asistencia</a>
+    </header>
+
+    <main>
+      <section class="section section--compact reveal" id="countdown">
+        <div class="section__inner">
+          <p class="section__eyebrow">Cuenta Regresiva</p>
+          <h2 class="section__title">Faltan para el 12 de septiembre de 2026</h2>
+          <div class="countdown">
+            <div class="countdown__item">
+              <span class="countdown__value" data-count="days">00</span>
+              <span class="countdown__label">Días</span>
+            </div>
+            <div class="countdown__item">
+              <span class="countdown__value" data-count="hours">00</span>
+              <span class="countdown__label">Horas</span>
+            </div>
+            <div class="countdown__item">
+              <span class="countdown__value" data-count="minutes">00</span>
+              <span class="countdown__label">Minutos</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section reveal" id="welcome">
+        <div class="section__inner">
+          <p class="section__eyebrow">Bienvenidos</p>
+          <h2 class="section__title">Nos encantará celebrarlo con ustedes</h2>
+          <p class="section__text">
+            Los invitamos con muchísima ilusión a celebrar nuestro gran día en la
+            hermosa ciudad de Ronda, Andalucía. Nos encantará compartir este
+            momento inolvidable con las personas más especiales de nuestra vida.
+          </p>
+          <div class="gallery">
+            <figure class="card card--photo">
+              <img src="./assets/gallery-1.svg" alt="Ceremonia suave" />
+              <figcaption>Una tarde pintada</figcaption>
+            </figure>
+            <figure class="card card--photo card--offset">
+              <img src="./assets/gallery-2.svg" alt="Flores y tonos suaves" />
+              <figcaption>El tono editorial</figcaption>
+            </figure>
+            <figure class="card card--photo">
+              <img src="./assets/gallery-3.svg" alt="Vista de Ronda" />
+              <figcaption>Ronda en flor</figcaption>
+            </figure>
+            <figure class="card card--photo">
+              <img src="./assets/gallery-4.svg" alt="Detalles de la ceremonia" />
+              <figcaption>Ceremonia suave</figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <section class="section reveal" id="venue">
+        <div class="section__inner section__inner--split">
+          <div class="card card--padded">
+            <p class="section__eyebrow section__eyebrow--left">El Lugar</p>
+            <h2 class="section__title section__title--left">Donde celebramos</h2>
+            <div class="venue__name">Finca El Olivar</div>
+            <div class="venue__meta">
+              <div>
+                <span>Fecha</span>
+                <strong>12 de septiembre de 2026</strong>
+              </div>
+              <div>
+                <span>Hora</span>
+                <strong>14:00</strong>
+              </div>
+              <div>
+                <span>Dirección</span>
+                <strong>Camino de los Olivos s/n, Ronda</strong>
+              </div>
+            </div>
+            <p class="venue__address">Málaga, 29400 – España</p>
+            <a
+              class="button button--solid"
+              href="https://www.google.com/maps/search/?api=1&amp;query=Finca+El+Olivar+Camino+de+los+Olivos+Ronda+Malaga"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Abrir en Google Maps
+            </a>
+          </div>
+          <div class="card card--image">
+            <img src="./assets/venue-watercolor.svg" alt="Finca El Olivar" />
+          </div>
+        </div>
+      </section>
+
+      <section class="section reveal" id="programme">
+        <div class="section__inner">
+          <p class="section__eyebrow">Programa del Día</p>
+          <h2 class="section__title">Así será nuestra celebración</h2>
+          <div class="card card--padded timeline">
+            <div class="timeline__row"><strong>14:00</strong><span>Llegada</span></div>
+            <div class="timeline__row"><strong>14:30</strong><span>Ceremonia</span></div>
+            <div class="timeline__row"><strong>16:00</strong><span>Coctel</span></div>
+            <div class="timeline__row"><strong>18:00</strong><span>Cena</span></div>
+            <div class="timeline__row"><strong>20:00</strong><span>Corte de pastel</span></div>
+            <div class="timeline__row"><strong>00:00</strong><span>Fin</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section reveal" id="dress-code">
+        <div class="section__inner">
+          <p class="section__eyebrow">Código de Vestimenta</p>
+          <h2 class="section__title">Elegancia romántica</h2>
+          <div class="grid-two">
+            <article class="card card--padded card--centered">
+              <p class="section__eyebrow">Mujeres</p>
+              <h3 class="card__title">Mujeres</h3>
+              <p>Vestido cocktail o formal.</p>
+            </article>
+            <article class="card card--padded card--centered">
+              <p class="section__eyebrow">Hombres</p>
+              <h3 class="card__title">Hombres</h3>
+              <p>Traje oscuro y corbata.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section reveal" id="events">
+        <div class="section__inner">
+          <p class="section__eyebrow">Eventos Pre-Boda</p>
+          <h2 class="section__title">Vengan a saludarnos</h2>
+          <p class="section__text">
+            Son reuniones informales, así que si andan por la zona nos dará
+            muchísimo gusto verlos.
+          </p>
+          <div class="grid-two">
+            <article class="card card--padded">
+              <h3 class="card__title">Copa de Bienvenida</h3>
+              <p>Viernes, 11 de septiembre de 2026</p>
+              <p>20:00</p>
+              <p>Bodega García Hidalgo, Ronda</p>
+            </article>
+            <article class="card card--padded">
+              <h3 class="card__title">Brunch de Despedida</h3>
+              <p>Domingo, 13 de septiembre de 2026</p>
+              <p>12:00</p>
+              <p>Parador de Ronda (terraza)</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section reveal" id="location">
+        <div class="section__inner">
+          <p class="section__eyebrow">Ubicación y Transporte</p>
+          <h2 class="section__title">Cómo llegar</h2>
+          <div class="card card--padded location">
+            <p>
+              Finca El Olivar, Camino de los Olivos s/n, 29400 Ronda, Málaga –
+              España
+            </p>
+            <ul>
+              <li>Desde Málaga: aprox. 1 h 30 min por la A-357 y la A-367</li>
+              <li>Desde Sevilla: aprox. 2 h por la A-376</li>
+              <li>Desde Marbella: aprox. 1 h por la A-397</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="section reveal" id="gifts">
+        <div class="section__inner">
+          <p class="section__eyebrow">Regalos</p>
+          <h2 class="section__title">Su presencia es nuestro mejor regalo</h2>
+          <p class="section__text">
+            Si desean tener un detalle con nosotros, aquí pueden encontrar
+            nuestros datos bancarios:
+          </p>
+          <div class="grid-two">
+            <article class="card card--padded">
+              <h3 class="card__title">CaixaBank – Alizee</h3>
+              <p>IBAN: ES12 2100 0418 4502 0005 1332</p>
+              <p>SWIFT: CAIXESBBXXX</p>
+            </article>
+            <article class="card card--padded">
+              <h3 class="card__title">Banco Santander – Regnier</h3>
+              <p>IBAN: ES76 0049 1500 5127 1034 2799</p>
+              <p>SWIFT: BSCHESMMXXX</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section reveal" id="rsvp">
+        <div class="section__inner">
+          <div class="card card--padded">
+            <p class="section__eyebrow section__eyebrow--left">Confirmación</p>
+            <h2 class="section__title section__title--left">
+              Queremos saber si podrán acompañarnos
+            </h2>
+            <form class="rsvp-form" id="rsvp-form">
+              <input
+                class="rsvp-form__hidden"
+                type="text"
+                name="website"
+                autocomplete="off"
+                tabindex="-1"
+              />
+
+              <div class="field">
+                <span class="field__label">Asistencia</span>
+                <div class="field__choices">
+                  <label class="choice choice--active">
+                    <input type="radio" name="attendance" value="yes" checked />
+                    <span>Sí, asistiré</span>
+                  </label>
+                  <label class="choice">
+                    <input type="radio" name="attendance" value="no" />
+                    <span>Lamento no poder asistir</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="field">
+                <span class="field__label">Número de invitados</span>
+                <div class="stepper">
+                  <button class="stepper__button" type="button" data-step="-1">-</button>
+                  <input
+                    class="stepper__value"
+                    id="guest-count"
+                    name="guestCount"
+                    type="text"
+                    value="1"
+                    readonly
+                  />
+                  <button class="stepper__button" type="button" data-step="1">+</button>
+                </div>
+              </div>
+
+              <div class="form-grid">
+                <label class="field">
+                  <span class="field__label">Persona 1 (Contacto principal)</span>
+                  <input class="field__input" type="text" name="name" placeholder="Nombre" required />
+                </label>
+                <label class="field">
+                  <span class="field__label">Email</span>
+                  <input class="field__input" type="email" name="email" placeholder="Email" required />
+                </label>
+                <label class="field form-grid__full">
+                  <span class="field__label">Restricciones alimentarias</span>
+                  <input class="field__input" type="text" name="dietary" placeholder="Restricciones alimentarias" />
+                </label>
+              </div>
+
+              <div class="field">
+                <span class="field__label">¿Asisten niños?</span>
+                <div class="field__choices field__choices--compact">
+                  <label class="choice choice--pill">
+                    <input type="radio" name="children" value="yes" />
+                    <span>Sí</span>
+                  </label>
+                  <label class="choice choice--pill choice--active">
+                    <input type="radio" name="children" value="no" checked />
+                    <span>No</span>
+                  </label>
+                </div>
+              </div>
+
+              <label class="field">
+                <span class="field__label">Mensaje para nosotros</span>
+                <textarea class="field__input field__textarea" name="message" placeholder="Mensaje para nosotros"></textarea>
+              </label>
+
+              <div class="rsvp-form__footer">
+                <button class="button button--solid" type="submit">
+                  Enviar confirmación
+                </button>
+                <p class="rsvp-form__success" id="rsvp-success" hidden>
+                  Gracias. Tu confirmación quedó lista con mucho cariño.
+                </p>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer reveal">
+      <div class="section__inner">
+        <div class="card card--padded footer__card">
+          <img
+            class="footer__watermark"
+            src="./assets/watermark-floral.svg"
+            alt=""
+          />
+          <div class="footer__content">
+            <div class="footer__names">Regnier &amp; Alizee</div>
+            <p class="footer__date">12 de septiembre de 2026</p>
+            <p class="footer__credit">Hecho con cariño por The Digital Yes</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
