@@ -1,10 +1,10 @@
 @import url("https://fonts.googleapis.com/css2?family=Corinthia:wght@400;700&family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap");
 
 :root {
-  --paper: #fbf7f1;
-  --paper-deep: #f3ebe1;
-  --paper-soft: rgba(255, 252, 247, 0.78);
-  --panel: rgba(255, 252, 247, 0.62);
+  --paper: rgb(254, 254, 254);
+  --paper-deep: rgb(254, 254, 254);
+  --paper-soft: rgba(254, 254, 254, 0.86);
+  --panel: rgba(254, 254, 254, 0.72);
   --line: rgba(138, 116, 96, 0.22);
   --line-strong: rgba(138, 116, 96, 0.34);
   --text: #77614e;
@@ -33,11 +33,7 @@ body {
   color: var(--text);
   font-family: "Manrope", sans-serif;
   text-rendering: optimizeLegibility;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0)),
-    radial-gradient(circle at top left, rgba(255, 247, 238, 0.9), transparent 30%),
-    radial-gradient(circle at bottom right, rgba(243, 235, 225, 0.45), transparent 34%),
-    linear-gradient(180deg, #fffdf9 0%, #fcf7f0 52%, #f8f1e7 100%);
+  background: rgb(254, 254, 254);
 }
 
 body::before {
@@ -45,11 +41,9 @@ body::before {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  opacity: 0.42;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.32)),
-    url("../assets/paper-texture.svg");
-  mix-blend-mode: multiply;
+  opacity: 0.12;
+  background: url("../assets/paper-texture.svg");
+  mix-blend-mode: normal;
 }
 
 img {
@@ -80,15 +74,34 @@ button {
   position: relative;
   min-height: 100svh;
   overflow: hidden;
-  background: transparent;
+  background: rgb(254, 254, 254);
 }
 
+.hero__video,
 .hero__media,
 .hero__media img {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
+  background: rgb(254, 254, 254);
+}
+
+.hero__video {
+  z-index: 1;
+  object-fit: cover;
+  object-position: center 76%;
+  transform: scale(1.08);
+  transform-origin: center top;
+  opacity: 1;
+  transition:
+    opacity 900ms ease,
+    transform 900ms ease;
+}
+
+.hero.is-video-fallback .hero__video {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .hero__media img {
@@ -97,11 +110,20 @@ button {
   filter: saturate(0.92) contrast(0.96);
 }
 
+.hero__media {
+  z-index: 0;
+}
+
 .hero__overlay {
   position: absolute;
   inset: 0;
-  background:
-    linear-gradient(90deg, rgba(255, 249, 243, 0.5) 0%, rgba(255, 249, 243, 0.22) 22%, rgba(255, 249, 243, 0.06) 38%, rgba(255, 249, 243, 0) 56%);
+  z-index: 2;
+  background: linear-gradient(
+    90deg,
+    rgba(254, 254, 254, 0.12) 0%,
+    rgba(254, 254, 254, 0.05) 18%,
+    rgba(254, 254, 254, 0) 34%
+  );
 }
 
 .hero::after {
@@ -110,7 +132,7 @@ button {
 
 .hero__content {
   position: relative;
-  z-index: 2;
+  z-index: 3;
   width: var(--content);
   margin: 0 auto;
   padding-top: clamp(5.5rem, 14vw, 8.5rem);
@@ -145,16 +167,34 @@ button {
 
 .hero__names {
   display: grid;
-  gap: 1rem;
-  font-family: "Corinthia", cursive;
-  font-size: clamp(4.8rem, 12vw, 8rem);
-  line-height: 0.88;
+  gap: 0.2rem;
 }
 
-.hero__ampersand {
-  padding-left: 0.25rem;
-  font-size: clamp(2.5rem, 7vw, 3.6rem);
-  color: rgba(119, 97, 78, 0.72);
+.hero__name {
+  display: block;
+  width: fit-content;
+  font-family: "Corinthia", cursive;
+  color: rgba(119, 97, 78, 0.98);
+  font-weight: 700;
+  opacity: 0;
+  line-height: 0.86;
+  animation: hero-name-fade 700ms ease forwards;
+}
+
+.hero__name--first {
+  font-size: clamp(4.9rem, 11.5vw, 5.9rem);
+  animation-delay: 0.25s;
+}
+
+.hero__name--ampersand {
+  margin-left: 0.18rem;
+  font-size: clamp(2.9rem, 7.4vw, 3.4rem);
+  animation-delay: 0.7s;
+}
+
+.hero__name--second {
+  font-size: clamp(4.45rem, 10.6vw, 5.35rem);
+  animation-delay: 1.05s;
 }
 
 .hero__divider {
@@ -180,7 +220,7 @@ button {
   position: absolute;
   left: 50%;
   bottom: 1.9rem;
-  z-index: 2;
+  z-index: 3;
   transform: translateX(-50%);
   min-width: 16rem;
   justify-content: center;
@@ -194,7 +234,7 @@ button {
   justify-content: center;
   border-radius: 999px;
   border: 1px solid rgba(138, 116, 96, 0.18);
-  background: rgba(255, 252, 247, 0.72);
+  background: rgba(254, 254, 254, 0.72);
   color: var(--text);
   transition:
     transform 220ms ease,
@@ -215,7 +255,7 @@ button {
 .hero__cta:hover,
 .audio-toggle:hover {
   transform: translateY(-2px);
-  background: rgba(255, 252, 247, 0.92);
+  background: rgba(254, 254, 254, 0.92);
   border-color: rgba(138, 116, 96, 0.26);
 }
 
@@ -359,7 +399,7 @@ main {
   border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: var(--radius);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.54), rgba(255, 255, 255, 0.28)),
+    linear-gradient(180deg, rgba(254, 254, 254, 0.54), rgba(254, 254, 254, 0.28)),
     var(--panel);
   box-shadow: var(--shadow-soft);
 }
@@ -408,7 +448,7 @@ main {
 
 .card--photo {
   overflow: hidden;
-  background: rgba(255, 251, 246, 0.76);
+  background: rgba(254, 254, 254, 0.76);
 }
 
 .card--photo::before {
@@ -463,8 +503,8 @@ main {
   max-width: 51rem;
   margin: 3rem auto 0;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.18)),
-    rgba(255, 252, 247, 0.52);
+    linear-gradient(180deg, rgba(254, 254, 254, 0.5), rgba(254, 254, 254, 0.18)),
+    rgba(254, 254, 254, 0.52);
 }
 
 .timeline__row {
@@ -583,7 +623,7 @@ main {
 .rsvp-form__success {
   border: 1px solid rgba(138, 116, 96, 0.14);
   border-radius: 1.55rem;
-  background: rgba(255, 255, 255, 0.76);
+  background: rgba(254, 254, 254, 0.76);
 }
 
 .field__input {
@@ -596,7 +636,7 @@ main {
 
 .field__input:focus {
   border-color: rgba(138, 116, 96, 0.3);
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(254, 254, 254, 0.92);
 }
 
 .field__textarea {
@@ -647,7 +687,7 @@ main {
   height: 2.55rem;
   border: 0;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.94);
+  background: rgba(254, 254, 254, 0.94);
   color: var(--text);
   font-size: 1.3rem;
 }
@@ -753,7 +793,25 @@ main {
   }
 }
 
+@keyframes hero-name-fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
 @media (min-width: 768px) {
+  .hero__video {
+    display: none;
+  }
+
+  .hero__overlay {
+    background: none;
+  }
+
   .audio-toggle {
     right: 2rem;
     bottom: 2rem;
@@ -818,6 +876,11 @@ main {
   .card--photo img {
     animation: none;
     transition: none;
+  }
+
+  .hero__name {
+    opacity: 1;
+    animation: none;
   }
 
   .reveal {

@@ -2,6 +2,8 @@
   var eventDate = new Date("2027-02-20T14:00:00+01:00");
   var audio = document.getElementById("site-audio");
   var audioToggle = document.getElementById("audio-toggle");
+  var hero = document.getElementById("top");
+  var heroVideo = document.getElementById("hero-video");
   var countdownNodes = {
     days: document.querySelector("[data-count='days']"),
     hours: document.querySelector("[data-count='hours']"),
@@ -72,6 +74,114 @@
     });
   }
 
+  function fallbackHeroVideo() {
+    if (!hero) {
+      return;
+    }
+
+    hero.classList.add("is-video-fallback");
+  }
+
+  function freezeHeroVideo() {
+    if (!hero || !heroVideo) {
+      return;
+    }
+
+    hero.classList.add("is-video-ended");
+    heroVideo.pause();
+
+    if (Number.isFinite(heroVideo.duration) && heroVideo.duration > 0) {
+      try {
+        heroVideo.currentTime = Math.max(heroVideo.duration - 0.001, 0);
+      } catch (error) {}
+    }
+  }
+
+  function setupHeroVideo() {
+    if (!heroVideo || !hero) {
+      return;
+    }
+
+    var introSrc = heroVideo.getAttribute("data-intro-src");
+    var desktopQuery = window.matchMedia("(min-width: 768px)");
+
+    function tryPlayHero() {
+      var promise = heroVideo.play();
+
+      if (promise && typeof promise.catch === "function") {
+        promise.catch(function () {
+          fallbackHeroVideo();
+        });
+      }
+    }
+
+    function disableHeroVideo() {
+      heroVideo.pause();
+      hero.classList.add("is-video-fallback");
+      hero.classList.remove("is-video-ended");
+
+      if (heroVideo.getAttribute("src")) {
+        heroVideo.removeAttribute("src");
+        heroVideo.load();
+      }
+    }
+
+    function enableHeroVideo() {
+      if (!introSrc) {
+        fallbackHeroVideo();
+        return;
+      }
+
+      hero.classList.remove("is-video-fallback");
+      hero.classList.remove("is-video-ended");
+
+      if (heroVideo.getAttribute("src") !== introSrc) {
+        heroVideo.src = introSrc;
+        heroVideo.load();
+      }
+
+      try {
+        heroVideo.currentTime = 0;
+      } catch (error) {}
+
+      tryPlayHero();
+    }
+
+    function syncHeroMediaMode() {
+      if (desktopQuery.matches) {
+        disableHeroVideo();
+      } else {
+        enableHeroVideo();
+      }
+    }
+
+    heroVideo.addEventListener("ended", freezeHeroVideo);
+    heroVideo.addEventListener("error", fallbackHeroVideo, { once: true });
+    heroVideo.addEventListener("stalled", fallbackHeroVideo, { once: true });
+    heroVideo.loop = false;
+    syncHeroMediaMode();
+
+    if (typeof desktopQuery.addEventListener === "function") {
+      desktopQuery.addEventListener("change", syncHeroMediaMode);
+    } else if (typeof desktopQuery.addListener === "function") {
+      desktopQuery.addListener(syncHeroMediaMode);
+    }
+
+    window.addEventListener(
+      "pointerdown",
+      function () {
+        if (
+          !desktopQuery.matches &&
+          !hero.classList.contains("is-video-fallback") &&
+          !hero.classList.contains("is-video-ended")
+        ) {
+          tryPlayHero();
+        }
+      },
+      { once: true },
+    );
+  }
+
   function setupReveal() {
     var revealNodes = document.querySelectorAll(".reveal");
 
@@ -139,5 +249,6 @@
   updateChoiceStates();
   updateAudioVisibility();
   setupReveal();
+  setupHeroVideo();
   setAudioState(true);
 })();

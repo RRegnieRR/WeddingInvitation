@@ -14,8 +14,8 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <link rel="stylesheet" href="./styles/main.css?v=20260416-12" />
-    <script defer src="./scripts/main.js?v=20260416-12"></script>
+    <link rel="stylesheet" href="./styles/main.css?v=20260416-29" />
+    <script defer src="./scripts/main.js?v=20260416-29"></script>
   </head>
   <body>
     <audio
@@ -40,6 +40,15 @@
     </button>
 
     <header class="hero" id="top">
+      <video
+        class="hero__video"
+        id="hero-video"
+        autoplay
+        muted
+        playsinline
+        preload="auto"
+        data-intro-src="./assets/wedding_line_drawing_animation.mp4"
+      ></video>
       <picture class="hero__media">
         <source media="(min-width: 768px)" srcset="./assets/hero-image-horizontal.png" />
         <img src="./assets/hero-image.png" alt="" />
@@ -49,9 +58,9 @@
         <div class="hero__line"></div>
         <p class="hero__eyebrow">Nos Casamos</p>
         <div class="hero__names">
-          <span>Regnier</span>
-          <span class="hero__ampersand">&amp;</span>
-          <span>Alizee</span>
+          <span class="hero__name hero__name--first">Regnier</span>
+          <span class="hero__name hero__name--ampersand">&amp;</span>
+          <span class="hero__name hero__name--second">Alizee</span>
         </div>
         <div class="hero__divider">
           <span></span>
