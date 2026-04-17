@@ -373,8 +373,6 @@ main {
   content: "";
   position: absolute;
   inset: 0.9rem;
-  border-radius: calc(var(--radius) - 0.7rem);
-  border: 1px solid rgba(138, 116, 96, 0.08);
   pointer-events: none;
 }
 
@@ -817,17 +815,17 @@ main {
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --paper: #1c1713;
-    --paper-deep: #241d18;
-    --paper-soft: rgba(38, 31, 26, 0.86);
-    --panel: rgba(35, 28, 23, 0.76);
-    --line: rgba(208, 185, 159, 0.14);
-    --line-strong: rgba(208, 185, 159, 0.26);
-    --text: #eadfce;
-    --text-soft: rgba(234, 223, 206, 0.82);
-    --text-faint: rgba(234, 223, 206, 0.56);
-    --shadow-soft: 0 22px 70px rgba(0, 0, 0, 0.28);
-    --shadow-float: 0 16px 36px rgba(0, 0, 0, 0.34);
+    --paper: #171b0d;
+    --paper-deep: #202611;
+    --paper-soft: rgba(33, 39, 19, 0.88);
+    --panel: rgba(32, 38, 18, 0.8);
+    --line: rgba(190, 205, 115, 0.14);
+    --line-strong: rgba(190, 205, 115, 0.28);
+    --text: #eef0dc;
+    --text-soft: rgba(238, 240, 220, 0.82);
+    --text-faint: rgba(212, 220, 170, 0.58);
+    --shadow-soft: 0 22px 70px rgba(0, 0, 0, 0.34);
+    --shadow-float: 0 16px 36px rgba(0, 0, 0, 0.4);
   }
 
   html {
@@ -836,10 +834,10 @@ main {
 
   body {
     background:
-      linear-gradient(180deg, rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0)),
-      radial-gradient(circle at top left, rgba(73, 55, 40, 0.34), transparent 30%),
-      radial-gradient(circle at bottom right, rgba(28, 22, 18, 0.7), transparent 36%),
-      linear-gradient(180deg, #1b1612 0%, #201914 52%, #17120f 100%);
+      linear-gradient(180deg, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0)),
+      radial-gradient(circle at top left, rgba(124, 138, 46, 0.22), transparent 28%),
+      radial-gradient(circle at bottom right, rgba(83, 96, 27, 0.28), transparent 34%),
+      linear-gradient(180deg, #15190d 0%, #1b2010 52%, #121609 100%);
   }
 
   body::before {
@@ -848,17 +846,17 @@ main {
   }
 
   .hero {
-    background: #1b1612;
+    background: #161a0d;
   }
 
   .hero__overlay {
     background:
-      linear-gradient(90deg, rgba(24, 19, 16, 0.84) 0%, rgba(24, 19, 16, 0.54) 26%, rgba(24, 19, 16, 0.18) 48%, rgba(24, 19, 16, 0.02) 68%),
-      linear-gradient(180deg, rgba(24, 19, 16, 0.2), rgba(24, 19, 16, 0.08));
+      linear-gradient(90deg, rgba(17, 21, 10, 0.84) 0%, rgba(17, 21, 10, 0.54) 26%, rgba(17, 21, 10, 0.18) 48%, rgba(17, 21, 10, 0.02) 68%),
+      linear-gradient(180deg, rgba(17, 21, 10, 0.24), rgba(17, 21, 10, 0.08));
   }
 
   .hero::after {
-    background: linear-gradient(180deg, rgba(27, 22, 18, 0), var(--paper));
+    background: linear-gradient(180deg, rgba(22, 26, 13, 0), var(--paper));
   }
 
   .section__title,
@@ -867,61 +865,61 @@ main {
   .timeline__row strong,
   .countdown__value,
   .footer__names {
-    color: #f0e4d4;
+    color: #f0f1dd;
   }
 
   .card,
   .timeline {
-    border-color: rgba(255, 255, 255, 0.06);
+    border-color: rgba(200, 214, 124, 0.08);
     background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02)),
-      rgba(37, 30, 25, 0.82);
+      linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.015)),
+      rgba(34, 40, 19, 0.84);
   }
 
   .card::before {
-    border-color: rgba(234, 223, 206, 0.08);
+    border-color: rgba(200, 214, 124, 0.1);
   }
 
   .field__input,
   .choice,
   .stepper,
   .rsvp-form__success {
-    border-color: rgba(234, 223, 206, 0.12);
-    background: rgba(49, 39, 33, 0.9);
+    border-color: rgba(200, 214, 124, 0.12);
+    background: rgba(42, 50, 24, 0.92);
     color: var(--text);
   }
 
   .field__input:focus {
-    border-color: rgba(234, 223, 206, 0.26);
-    background: rgba(57, 45, 38, 0.96);
+    border-color: rgba(190, 205, 115, 0.3);
+    background: rgba(49, 58, 29, 0.98);
   }
 
   .stepper__button {
-    background: rgba(68, 54, 45, 0.96);
+    background: rgba(69, 80, 34, 0.96);
     color: var(--text);
   }
 
   .button,
   .hero__cta {
-    border-color: rgba(234, 223, 206, 0.14);
-    background: rgba(49, 39, 33, 0.72);
+    border-color: rgba(190, 205, 115, 0.16);
+    background: rgba(48, 57, 24, 0.76);
     color: var(--text);
   }
 
   .button:hover,
   .hero__cta:hover {
-    background: rgba(63, 50, 42, 0.92);
-    border-color: rgba(234, 223, 206, 0.2);
+    background: rgba(60, 71, 29, 0.94);
+    border-color: rgba(190, 205, 115, 0.24);
   }
 
   .audio-toggle {
-    border-color: rgba(234, 223, 206, 0.1);
-    background: rgba(112, 87, 65, 0.98);
-    color: #fff4e8;
+    border-color: rgba(190, 205, 115, 0.16);
+    background: rgba(124, 138, 46, 0.98);
+    color: #fbf9ef;
   }
 
   .audio-toggle::before {
-    background: rgba(112, 87, 65, 0.98);
+    background: rgba(124, 138, 46, 0.98);
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.06),
       0 16px 36px rgba(0, 0, 0, 0.34);

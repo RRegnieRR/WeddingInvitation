@@ -1,4 +1,4 @@
-export const eventDate = "2026-09-12T14:00:00+02:00";
+export const eventDate = "2027-02-20T14:00:00+01:00";
 const asset = (path) => `assets/${path}`;
 
 export const content = {
@@ -24,12 +24,12 @@ export const content = {
     },
     hero: {
       announcement: "We’re Getting Married",
-      date: "12 September 2026",
+      date: "20 February 2027",
       cta: "RSVP",
       scroll: "Scroll to discover",
     },
     countdown: {
-      title: "Until 12 September 2026",
+      title: "Until 20 February 2027",
       units: {
         days: "Days",
         hours: "Hours",
@@ -67,7 +67,7 @@ export const content = {
       title: "The Venue",
       subtitle: "Where we celebrate",
       name: "Finca El Olivar",
-      date: "12 September 2026",
+      date: "20 February 2027",
       time: "14:00",
       addressLine1: "Camino de los Olivos s/n, Ronda",
       addressLine2: "Málaga, 29400 – España",
@@ -217,12 +217,12 @@ export const content = {
     },
     hero: {
       announcement: "Nos Casamos",
-      date: "12 de septiembre de 2026",
+      date: "20 de febrero de 2027",
       cta: "Confirmar asistencia",
       scroll: "Descubre más",
     },
     countdown: {
-      title: "Faltan para el 12 de septiembre de 2026",
+      title: "Faltan para el 20 de febrero de 2027",
       units: {
         days: "Días",
         hours: "Horas",
@@ -260,7 +260,7 @@ export const content = {
       title: "El Lugar",
       subtitle: "Donde celebramos",
       name: "Finca El Olivar",
-      date: "12 de septiembre de 2026",
+      date: "20 de febrero de 2027",
       time: "14:00",
       addressLine1: "Camino de los Olivos s/n, Ronda",
       addressLine2: "Málaga, 29400 – España",

@@ -1,5 +1,5 @@
 (function () {
-  var eventDate = new Date("2026-09-12T14:00:00+02:00");
+  var eventDate = new Date("2027-02-20T14:00:00+01:00");
   var audio = document.getElementById("site-audio");
   var audioToggle = document.getElementById("audio-toggle");
   var countdownNodes = {
@@ -9,7 +9,6 @@
   };
   var form = document.getElementById("rsvp-form");
   var successMessage = document.getElementById("rsvp-success");
-  var guestCount = document.getElementById("guest-count");
   var choiceInputs = document.querySelectorAll(".choice input");
 
   function pad(value) {
@@ -102,14 +101,6 @@
       observer.observe(node);
     });
   }
-
-  document.querySelectorAll("[data-step]").forEach(function (button) {
-    button.addEventListener("click", function () {
-      var step = Number(button.getAttribute("data-step"));
-      var current = Number(guestCount.value || 1);
-      guestCount.value = String(Math.max(1, current + step));
-    });
-  });
 
   choiceInputs.forEach(function (input) {
     input.addEventListener("change", updateChoiceStates);
