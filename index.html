@@ -14,10 +14,12 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <link rel="stylesheet" href="./styles/main.css?v=20260421-31" />
-    <script type="module" src="./scripts/main.js?v=20260421-31"></script>
+    <link rel="stylesheet" href="./styles/main.css?v=20260517-04" />
+    <script type="module" src="./scripts/main.js?v=20260517-04"></script>
   </head>
   <body>
+    <div class="scroll-progress" aria-hidden="true"></div>
+
     <audio
       id="site-audio"
       src="./Joy%20in%20the%20Little%20Things.mp3"
@@ -102,23 +104,119 @@
             hermosa ciudad de Ronda, Andalucía. Nos encantará compartir este
             momento inolvidable con las personas más especiales de nuestra vida.
           </p>
-          <div class="gallery">
-            <figure class="card card--photo">
-              <img src="./assets/gallery-1.svg" alt="Ceremonia suave" />
-              <figcaption>Una tarde pintada</figcaption>
-            </figure>
-            <figure class="card card--photo card--offset">
-              <img src="./assets/gallery-2.svg" alt="Flores y tonos suaves" />
-              <figcaption>El tono editorial</figcaption>
-            </figure>
-            <figure class="card card--photo">
-              <img src="./assets/gallery-3.svg" alt="Vista de Ronda" />
-              <figcaption>Ronda en flor</figcaption>
-            </figure>
-            <figure class="card card--photo">
-              <img src="./assets/gallery-4.svg" alt="Detalles de la ceremonia" />
-              <figcaption>Ceremonia suave</figcaption>
-            </figure>
+          <div class="gallery-experience" data-gallery>
+            <div
+              class="gallery-stage"
+              data-tilt
+              tabindex="0"
+              aria-label="Galería. Desliza para cambiar de imagen."
+            >
+              <div class="gallery-stage__track" data-gallery-track>
+                <img
+                  src="./assets/gallery.JPG"
+                  alt="Regnier y Alizee sonriendo juntos"
+                  data-gallery-slide
+                />
+                <img
+                  src="./assets/gallery_2.jpeg"
+                  alt="Regnier y Alizee en una terraza luminosa"
+                  data-gallery-slide
+                />
+                <img
+                  src="./assets/gallery_3.jpg"
+                  alt="Regnier y Alizee sentados juntos"
+                  data-gallery-slide
+                />
+                <img
+                  src="./assets/gallery_4.jpg"
+                  alt="Regnier y Alizee mirándose al atardecer"
+                  data-gallery-slide
+                />
+                <img
+                  src="./assets/gallery_5.jpeg"
+                  alt="Regnier y Alizee bajo un cielo de atardecer"
+                  data-gallery-slide
+                />
+                <img
+                  src="./assets/gallery_6.jpeg"
+                  alt="Regnier y Alizee sentados juntos en una iglesia"
+                  data-gallery-slide
+                />
+              </div>
+              <div class="gallery-stage__caption" aria-live="polite">
+                <span data-gallery-count>01 / 06</span>
+              </div>
+            </div>
+
+            <div class="gallery-strip" role="list" aria-label="Seleccionar imagen">
+              <button
+                class="gallery-thumb is-active"
+                type="button"
+                data-gallery-thumb
+                data-src="./assets/gallery.JPG"
+                data-alt="Regnier y Alizee sonriendo juntos"
+                aria-label="Ver Nosotros dos"
+                aria-current="true"
+              >
+                <img src="./assets/gallery.JPG" alt="" />
+                <span>01</span>
+              </button>
+              <button
+                class="gallery-thumb"
+                type="button"
+                data-gallery-thumb
+                data-src="./assets/gallery_2.jpeg"
+                data-alt="Regnier y Alizee en una terraza luminosa"
+                aria-label="Ver Una tarde juntos"
+              >
+                <img src="./assets/gallery_2.jpeg" alt="" />
+                <span>02</span>
+              </button>
+              <button
+                class="gallery-thumb"
+                type="button"
+                data-gallery-thumb
+                data-src="./assets/gallery_3.jpg"
+                data-alt="Regnier y Alizee sentados juntos"
+                aria-label="Ver Antes del sí"
+              >
+                <img src="./assets/gallery_3.jpg" alt="" />
+                <span>03</span>
+              </button>
+              <button
+                class="gallery-thumb"
+                type="button"
+                data-gallery-thumb
+                data-src="./assets/gallery_4.jpg"
+                data-alt="Regnier y Alizee mirándose al atardecer"
+                aria-label="Ver Luz de tarde"
+              >
+                <img src="./assets/gallery_4.jpg" alt="" />
+                <span>04</span>
+              </button>
+              <button
+                class="gallery-thumb"
+                type="button"
+                data-gallery-thumb
+                data-src="./assets/gallery_5.jpeg"
+                data-alt="Regnier y Alizee bajo un cielo de atardecer"
+                aria-label="Ver Atardecer"
+              >
+                <img src="./assets/gallery_5.jpeg" alt="" />
+                <span>05</span>
+              </button>
+              <button
+                class="gallery-thumb"
+                type="button"
+                data-gallery-thumb
+                data-src="./assets/gallery_6.jpeg"
+                data-alt="Regnier y Alizee sentados juntos en una iglesia"
+                aria-label="Ver Iglesia"
+              >
+                <img src="./assets/gallery_6.jpeg" alt="" />
+                <span>06</span>
+              </button>
+            </div>
           </div>
         </div>
       </section>
@@ -127,8 +225,8 @@
         <div class="section__inner section__inner--split">
           <div class="card card--padded">
             <p class="section__eyebrow section__eyebrow--left">El Lugar</p>
-            <h2 class="section__title section__title--left">Donde celebramos</h2>
-            <div class="venue__name">Finca El Olivar</div>
+            <h2 class="section__title section__title--left">Levanto</h2>
+            <p class="venue__subtitle">Jardín de Eventos</p>
             <div class="venue__meta">
               <div>
                 <span>Fecha</span>
@@ -136,25 +234,26 @@
               </div>
               <div>
                 <span>Hora</span>
-                <strong>14:00</strong>
-              </div>
-              <div>
-                <span>Dirección</span>
-                <strong>Camino de los Olivos s/n, Ronda</strong>
+                <strong>18:30</strong>
               </div>
             </div>
-            <p class="venue__address">Málaga, 29400 – España</p>
+            <p class="venue__address">Zapopan, Jalisco – México</p>
             <a
               class="button button--solid"
-              href="https://www.google.com/maps/search/?api=1&amp;query=Finca+El+Olivar+Camino+de+los+Olivos+Ronda+Malaga"
+              href="https://maps.app.goo.gl/yXahbJzQsxAebn72A"
               target="_blank"
               rel="noreferrer"
             >
               Abrir en Google Maps
             </a>
           </div>
-          <div class="card card--image">
-            <img src="./assets/venue-watercolor.svg" alt="Finca El Olivar" />
+          <div class="card card--map" aria-label="Mapa de Levanto Jardín de Eventos">
+            <iframe
+              title="Mapa de Levanto Jardín de Eventos"
+              src="https://www.google.com/maps?q=20.5808532,-103.4335632&amp;z=16&amp;output=embed"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+            ></iframe>
           </div>
         </div>
       </section>
@@ -164,12 +263,12 @@
           <p class="section__eyebrow">Programa del Día</p>
           <h2 class="section__title">Así será nuestra celebración</h2>
           <div class="card card--padded timeline">
-            <div class="timeline__row"><strong>14:00</strong><span>Llegada</span></div>
-            <div class="timeline__row"><strong>14:30</strong><span>Ceremonia</span></div>
-            <div class="timeline__row"><strong>16:00</strong><span>Coctel</span></div>
-            <div class="timeline__row"><strong>18:00</strong><span>Cena</span></div>
-            <div class="timeline__row"><strong>20:00</strong><span>Corte de pastel</span></div>
-            <div class="timeline__row"><strong>00:00</strong><span>Fin</span></div>
+            <div class="timeline__row"><strong>18:30</strong><span>Llegada</span></div>
+            <div class="timeline__row"><strong>19:00</strong><span>Bienvenida</span></div>
+            <div class="timeline__row"><strong>19:30</strong><span>Cena</span></div>
+            <div class="timeline__row"><strong>20:30</strong><span>Baile</span></div>
+            <div class="timeline__row"><strong>22:00</strong><span>Pastel</span></div>
+            <div class="timeline__row"><strong>23:00</strong><span>Fin</span></div>
           </div>
         </div>
       </section>
@@ -189,49 +288,6 @@
               <h3 class="card__title">Hombres</h3>
               <p>Traje oscuro y corbata.</p>
             </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section reveal" id="events">
-        <div class="section__inner">
-          <p class="section__eyebrow">Eventos Pre-Boda</p>
-          <h2 class="section__title">Vengan a saludarnos</h2>
-          <p class="section__text">
-            Son reuniones informales, así que si andan por la zona nos dará
-            muchísimo gusto verlos.
-          </p>
-          <div class="grid-two">
-            <article class="card card--padded">
-              <h3 class="card__title">Copa de Bienvenida</h3>
-              <p>Viernes, 11 de septiembre de 2026</p>
-              <p>20:00</p>
-              <p>Bodega García Hidalgo, Ronda</p>
-            </article>
-            <article class="card card--padded">
-              <h3 class="card__title">Brunch de Despedida</h3>
-              <p>Domingo, 13 de septiembre de 2026</p>
-              <p>12:00</p>
-              <p>Parador de Ronda (terraza)</p>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section reveal" id="location">
-        <div class="section__inner">
-          <p class="section__eyebrow">Ubicación y Transporte</p>
-          <h2 class="section__title">Cómo llegar</h2>
-          <div class="card card--padded location">
-            <p>
-              Finca El Olivar, Camino de los Olivos s/n, 29400 Ronda, Málaga –
-              España
-            </p>
-            <ul>
-              <li>Desde Málaga: aprox. 1 h 30 min por la A-357 y la A-367</li>
-              <li>Desde Sevilla: aprox. 2 h por la A-376</li>
-              <li>Desde Marbella: aprox. 1 h por la A-397</li>
-            </ul>
           </div>
         </div>
       </section>
@@ -334,11 +390,6 @@
     <footer class="footer reveal">
       <div class="section__inner">
         <div class="card card--padded footer__card">
-          <img
-            class="footer__watermark"
-            src="./assets/watermark-floral.svg"
-            alt=""
-          />
           <div class="footer__content">
             <div class="footer__names">Regnier &amp; Alizee</div>
             <p class="footer__date">20 de febrero de 2027</p>

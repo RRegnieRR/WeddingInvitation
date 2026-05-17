@@ -4,6 +4,8 @@
   var audioToggle = document.getElementById("audio-toggle");
   var hero = document.getElementById("top");
   var heroVideo = document.getElementById("hero-video");
+  var scrollProgress = document.querySelector(".scroll-progress");
+  var gallery = document.querySelector("[data-gallery]");
   var countdownNodes = {
     days: document.querySelector("[data-count='days']"),
     hours: document.querySelector("[data-count='hours']"),
@@ -46,6 +48,19 @@
     } else {
       audioToggle.classList.remove("is-visible");
     }
+  }
+
+  function updateScrollProgress() {
+    if (!scrollProgress) {
+      return;
+    }
+
+    var scrollable = document.documentElement.scrollHeight - window.innerHeight;
+    var progress = scrollable > 0 ? (window.scrollY / scrollable) * 100 : 0;
+    scrollProgress.style.setProperty(
+      "--scroll-progress",
+      Math.min(Math.max(progress, 0), 100).toFixed(2) + "%",
+    );
   }
 
   function attemptPlay() {
@@ -308,6 +323,209 @@
     });
   }
 
+  function setupGallery() {
+    if (!gallery) {
+      return;
+    }
+
+    var stage = gallery.querySelector(".gallery-stage");
+    var track = gallery.querySelector("[data-gallery-track]");
+    var countNode = gallery.querySelector("[data-gallery-count]");
+    var thumbs = Array.from(gallery.querySelectorAll("[data-gallery-thumb]"));
+    var slides = track ? Array.from(track.querySelectorAll("[data-gallery-slide]")) : [];
+    var activeIndex = 0;
+    var dragStartX = 0;
+    var dragStartY = 0;
+    var dragDeltaX = 0;
+    var isDragging = false;
+
+    function getSlideCount() {
+      return slides.length || thumbs.length;
+    }
+
+    function setTrackPosition(value) {
+      if (track) {
+        track.style.setProperty("--gallery-x", value + "px");
+      }
+    }
+
+    function syncGalleryState() {
+      var total = getSlideCount();
+
+      if (!total) {
+        return;
+      }
+
+      if (countNode) {
+        countNode.textContent = pad(activeIndex + 1) + " / " + pad(total);
+      }
+
+      thumbs.forEach(function (thumb, thumbIndex) {
+        var isActive = thumbIndex === activeIndex;
+        thumb.classList.toggle("is-active", isActive);
+
+        if (isActive) {
+          thumb.setAttribute("aria-current", "true");
+        } else {
+          thumb.removeAttribute("aria-current");
+        }
+      });
+    }
+
+    function setActiveGalleryItem(index) {
+      var total = getSlideCount();
+
+      if (!total) {
+        return;
+      }
+
+      activeIndex = Math.min(Math.max(index, 0), total - 1);
+      snapToActiveGalleryItem();
+      syncGalleryState();
+    }
+
+    function snapToActiveGalleryItem() {
+      var width = stage ? stage.getBoundingClientRect().width : 0;
+      setTrackPosition(activeIndex * width * -1);
+    }
+
+    function showPrevious() {
+      setActiveGalleryItem(activeIndex - 1);
+    }
+
+    function showNext() {
+      setActiveGalleryItem(activeIndex + 1);
+    }
+
+    function startGalleryDrag(event) {
+      if (!stage || !track || event.button > 0) {
+        return;
+      }
+
+      isDragging = true;
+      dragStartX = event.clientX;
+      dragStartY = event.clientY;
+      dragDeltaX = 0;
+      stage.classList.add("is-dragging");
+
+      if (typeof stage.setPointerCapture === "function") {
+        stage.setPointerCapture(event.pointerId);
+      }
+    }
+
+    function moveGalleryDrag(event) {
+      if (!isDragging || !stage || !track) {
+        return;
+      }
+
+      var total = getSlideCount();
+      var rect = stage.getBoundingClientRect();
+      var deltaX = event.clientX - dragStartX;
+      var deltaY = event.clientY - dragStartY;
+
+      if (Math.abs(deltaY) > Math.abs(deltaX) * 1.2) {
+        return;
+      }
+
+      dragDeltaX = deltaX;
+      var dragOffset = dragDeltaX;
+
+      if (
+        (activeIndex === 0 && dragOffset > 0) ||
+        (activeIndex === total - 1 && dragOffset < 0)
+      ) {
+        dragOffset *= 0.28;
+      }
+
+      setTrackPosition(activeIndex * rect.width * -1 + dragOffset);
+    }
+
+    function endGalleryDrag(event) {
+      if (!isDragging || !stage) {
+        return;
+      }
+
+      var rect = stage.getBoundingClientRect();
+      var threshold = Math.max(rect.width * 0.16, 54);
+      isDragging = false;
+      stage.classList.remove("is-dragging");
+
+      if (typeof stage.releasePointerCapture === "function") {
+        try {
+          stage.releasePointerCapture(event.pointerId);
+        } catch (error) {}
+      }
+
+      if (dragDeltaX <= threshold * -1) {
+        showNext();
+      } else if (dragDeltaX >= threshold) {
+        showPrevious();
+      } else {
+        snapToActiveGalleryItem();
+      }
+
+      dragDeltaX = 0;
+    }
+
+    if (stage && window.matchMedia("(hover: hover)").matches) {
+      stage.addEventListener("pointermove", function (event) {
+        var rect = stage.getBoundingClientRect();
+        var x = (event.clientX - rect.left) / rect.width;
+        var y = (event.clientY - rect.top) / rect.height;
+        stage.style.setProperty("--tilt-x", (0.5 - y) * 4 + "deg");
+        stage.style.setProperty("--tilt-y", (x - 0.5) * 5 + "deg");
+        stage.style.setProperty("--spot-x", x * 100 + "%");
+        stage.style.setProperty("--spot-y", y * 100 + "%");
+      });
+
+      stage.addEventListener("pointerleave", function () {
+        stage.style.setProperty("--tilt-x", "0deg");
+        stage.style.setProperty("--tilt-y", "0deg");
+        stage.style.setProperty("--spot-x", "50%");
+        stage.style.setProperty("--spot-y", "50%");
+      });
+    }
+
+    if (stage) {
+      stage.addEventListener("pointerdown", startGalleryDrag);
+      stage.addEventListener("pointermove", moveGalleryDrag);
+      stage.addEventListener("pointerup", endGalleryDrag);
+      stage.addEventListener("pointercancel", endGalleryDrag);
+      stage.addEventListener("lostpointercapture", function () {
+        if (isDragging) {
+          isDragging = false;
+          stage.classList.remove("is-dragging");
+          snapToActiveGalleryItem();
+        }
+      });
+      window.addEventListener("resize", snapToActiveGalleryItem);
+    }
+
+    thumbs.forEach(function (thumb, index) {
+      thumb.addEventListener("click", function () {
+        setActiveGalleryItem(index);
+      });
+    });
+
+    document.addEventListener("keydown", function (event) {
+      var isGalleryFocused = gallery.contains(document.activeElement);
+
+      if (!isGalleryFocused) {
+        return;
+      }
+
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        showPrevious();
+      } else if (event.key === "ArrowRight") {
+        event.preventDefault();
+        showNext();
+      }
+    });
+
+    setActiveGalleryItem(0);
+  }
+
   choiceInputs.forEach(function (input) {
     input.addEventListener("change", updateChoiceStates);
   });
@@ -443,13 +661,23 @@
     { once: true },
   );
 
-  window.addEventListener("scroll", updateAudioVisibility, { passive: true });
+  window.addEventListener(
+    "scroll",
+    function () {
+      updateAudioVisibility();
+      updateScrollProgress();
+    },
+    { passive: true },
+  );
+  window.addEventListener("resize", updateScrollProgress);
 
   updateCountdown();
   setInterval(updateCountdown, 1000);
   updateChoiceStates();
   updateAudioVisibility();
+  updateScrollProgress();
   setupReveal();
+  setupGallery();
   setupHeroVideo();
   setAudioState(true);
 })();
