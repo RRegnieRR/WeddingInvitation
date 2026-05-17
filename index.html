@@ -14,8 +14,8 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <link rel="stylesheet" href="./styles/main.css?v=20260416-29" />
-    <script defer src="./scripts/main.js?v=20260416-29"></script>
+    <link rel="stylesheet" href="./styles/main.css?v=20260421-31" />
+    <script type="module" src="./scripts/main.js?v=20260421-31"></script>
   </head>
   <body>
     <audio
@@ -266,7 +266,11 @@
             <h2 class="section__title section__title--left">
               Queremos saber si podrán acompañarnos
             </h2>
-            <form class="rsvp-form" id="rsvp-form">
+            <form
+              class="rsvp-form"
+              id="rsvp-form"
+              data-rsvp-endpoint="/api/rsvp"
+            >
               <input
                 class="rsvp-form__hidden"
                 type="text"
@@ -317,7 +321,7 @@
                 <button class="button button--solid" type="submit">
                   Enviar confirmación
                 </button>
-                <p class="rsvp-form__success" id="rsvp-success" hidden>
+                <p class="rsvp-form__status" id="rsvp-status" hidden aria-live="polite">
                   Gracias. Tu confirmación quedó lista con mucho cariño.
                 </p>
               </div>
@@ -338,7 +342,7 @@
           <div class="footer__content">
             <div class="footer__names">Regnier &amp; Alizee</div>
             <p class="footer__date">20 de febrero de 2027</p>
-            <p class="footer__credit">Hecho con cariño por Luis Regnier 🧑‍💻</p>
+            <p class="footer__credit">Hecho con cariño por Luis Regnier ♡</p>
           </div>
         </div>
       </div>

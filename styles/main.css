@@ -620,7 +620,7 @@ main {
 .field__input,
 .choice,
 .stepper,
-.rsvp-form__success {
+.rsvp-form__status {
   border: 1px solid rgba(138, 116, 96, 0.14);
   border-radius: 1.55rem;
   background: rgba(254, 254, 254, 0.76);
@@ -718,10 +718,39 @@ main {
   gap: 1rem;
 }
 
-.rsvp-form__success {
+.rsvp-form__status {
   padding: 0.9rem 1.1rem;
   line-height: 1.7;
   color: rgba(119, 97, 78, 0.84);
+}
+
+.rsvp-form__status.is-success {
+  border-color: rgba(108, 145, 98, 0.3);
+  background: rgba(244, 250, 241, 0.96);
+  color: #4f6747;
+}
+
+.rsvp-form__status.is-warning {
+  border-color: rgba(168, 129, 88, 0.28);
+  background: rgba(252, 247, 239, 0.96);
+  color: #7a624d;
+}
+
+.rsvp-form__status.is-error {
+  border-color: rgba(170, 101, 93, 0.28);
+  background: rgba(255, 244, 243, 0.98);
+  color: #8b5954;
+}
+
+.rsvp-form.is-submitting .button[type="submit"],
+.rsvp-form.is-locked .button[type="submit"] {
+  opacity: 0.72;
+  pointer-events: none;
+}
+
+.rsvp-form.is-locked .field__input,
+.rsvp-form.is-locked .choice {
+  opacity: 0.7;
 }
 
 .footer {

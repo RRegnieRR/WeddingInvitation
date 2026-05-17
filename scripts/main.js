@@ -10,8 +10,18 @@
     minutes: document.querySelector("[data-count='minutes']"),
   };
   var form = document.getElementById("rsvp-form");
-  var successMessage = document.getElementById("rsvp-success");
+  var statusMessage = document.getElementById("rsvp-status");
   var choiceInputs = document.querySelectorAll(".choice input");
+  var submitButton = form ? form.querySelector("button[type='submit']") : null;
+  var configuredRsvpEndpoint = form
+    ? form.getAttribute("data-rsvp-endpoint") || ""
+    : "";
+  var rsvpEndpoint = configuredRsvpEndpoint ||
+    (window.location.protocol === "file:"
+      ? "http://127.0.0.1:3001/api/rsvp"
+      : "/api/rsvp");
+  var browserIdStorageKey = "wedding_rsvp_browser_id";
+  var submissionStorageKey = "wedding_rsvp_submission";
 
   function pad(value) {
     return String(value).padStart(2, "0");
@@ -72,6 +82,92 @@
       var input = choice.querySelector("input");
       choice.classList.toggle("choice--active", input.checked);
     });
+  }
+
+  function getStorageItem(key) {
+    try {
+      return window.localStorage.getItem(key);
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function setStorageItem(key, value) {
+    try {
+      window.localStorage.setItem(key, value);
+    } catch (error) {}
+  }
+
+  function getBrowserId() {
+    var existing = getStorageItem(browserIdStorageKey);
+
+    if (existing) {
+      return existing;
+    }
+
+    var nextValue =
+      window.crypto && typeof window.crypto.randomUUID === "function"
+        ? window.crypto.randomUUID()
+        : "browser-" + Date.now() + "-" + Math.random().toString(16).slice(2);
+
+    setStorageItem(browserIdStorageKey, nextValue);
+    return nextValue;
+  }
+
+  function getStoredSubmission() {
+    var raw = getStorageItem(submissionStorageKey);
+
+    if (!raw) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(raw);
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function setRsvpStatus(kind, message) {
+    if (!statusMessage) {
+      return;
+    }
+
+    statusMessage.hidden = false;
+    statusMessage.className = "rsvp-form__status is-" + kind;
+    statusMessage.textContent = message;
+  }
+
+  function setSubmitPending(isPending) {
+    if (!form || !submitButton) {
+      return;
+    }
+
+    form.classList.toggle("is-submitting", isPending);
+    submitButton.textContent = isPending
+      ? "Enviando confirmación..."
+      : submitButton.dataset.defaultLabel || "Enviar confirmación";
+  }
+
+  function lockRsvpForm(statusKind, message) {
+    if (!form) {
+      return;
+    }
+
+    Array.from(form.elements).forEach(function (field) {
+      field.disabled = true;
+    });
+
+    form.classList.remove("is-submitting");
+    form.classList.add("is-locked");
+
+    if (submitButton) {
+      submitButton.textContent = "Confirmación enviada";
+    }
+
+    if (message) {
+      setRsvpStatus(statusKind || "success", message);
+    }
   }
 
   function fallbackHeroVideo() {
@@ -216,16 +312,121 @@
     input.addEventListener("change", updateChoiceStates);
   });
 
-  form.addEventListener("submit", function (event) {
-    event.preventDefault();
-    var honeypot = form.querySelector("input[name='website']");
+  if (submitButton) {
+    submitButton.dataset.defaultLabel = submitButton.textContent.trim();
+  }
 
-    if (honeypot && honeypot.value) {
-      return;
+  if (form) {
+    var storedSubmission = getStoredSubmission();
+
+    if (storedSubmission) {
+      lockRsvpForm(
+        "warning",
+        "Este dispositivo ya envió una confirmación. Si necesitas cambiarla, habrá que editar el registro guardado en GitHub.",
+      );
     }
 
-    successMessage.hidden = false;
-  });
+    form.addEventListener("submit", async function (event) {
+      event.preventDefault();
+
+      var honeypot = form.querySelector("input[name='website']");
+
+      if (honeypot && honeypot.value) {
+        return;
+      }
+
+      if (form.classList.contains("is-locked")) {
+        return;
+      }
+
+      var formData = new FormData(form);
+      var payload = {
+        website: String(formData.get("website") || "").trim(),
+        attendance: String(formData.get("attendance") || "").trim(),
+        name: String(formData.get("name") || "").trim(),
+        children: String(formData.get("children") || "").trim(),
+        message: String(formData.get("message") || "").trim(),
+        deviceId: getBrowserId(),
+      };
+
+      if (!payload.name) {
+        setRsvpStatus("error", "Escribe tu nombre para poder guardar la confirmación.");
+        return;
+      }
+
+      setSubmitPending(true);
+
+      try {
+        var response = await fetch(rsvpEndpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        });
+        var result = await response.json().catch(function () {
+          return {};
+        });
+
+        if (response.ok && result.ok) {
+          setStorageItem(
+            submissionStorageKey,
+            JSON.stringify({
+              name: payload.name,
+              deviceId: payload.deviceId,
+              sentAt: new Date().toISOString(),
+            }),
+          );
+          lockRsvpForm(
+            "success",
+            result.message ||
+              "Gracias. Tu confirmación quedó guardada correctamente.",
+          );
+          return;
+        }
+
+        if (response.status === 409) {
+          if (result.reason === "device") {
+            setStorageItem(
+              submissionStorageKey,
+              JSON.stringify({
+                name: payload.name,
+                deviceId: payload.deviceId,
+                sentAt: new Date().toISOString(),
+              }),
+            );
+            lockRsvpForm(
+              "warning",
+              result.message ||
+                "Este dispositivo ya había enviado una confirmación anteriormente.",
+            );
+            return;
+          }
+
+          setRsvpStatus(
+            "warning",
+            result.message || "Ya existe una confirmación registrada con ese nombre.",
+          );
+          return;
+        }
+
+        setRsvpStatus(
+          "error",
+          result.message ||
+            "No se pudo guardar la confirmación. Intenta nuevamente en un momento.",
+        );
+      } catch (error) {
+        setRsvpStatus(
+          "error",
+          "No se pudo conectar con el sistema RSVP. Intenta de nuevo en unos momentos.",
+        );
+      } finally {
+        if (!form.classList.contains("is-locked")) {
+          setSubmitPending(false);
+        }
+      }
+    });
+  }
 
   audioToggle.addEventListener("click", function () {
     var enabled = audioToggle.getAttribute("aria-pressed") !== "true";
