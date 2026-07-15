@@ -723,6 +723,254 @@ main {
   margin-top: 3rem;
 }
 
+.section-mark {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 4.6rem;
+  height: 4.6rem;
+  margin: 0 auto 1.5rem;
+  border: 1px solid rgba(119, 97, 78, 0.2);
+  border-radius: 999px;
+  background: rgba(249, 244, 235, 0.74);
+  box-shadow: 0 14px 36px rgba(103, 75, 49, 0.08);
+}
+
+.section-mark--attire span,
+.section-mark--attire::before,
+.section-mark--attire::after {
+  position: absolute;
+  content: "";
+  background: #667331;
+}
+
+.section-mark--attire span {
+  top: 1.05rem;
+  width: 0.95rem;
+  height: 1rem;
+  border-radius: 0.45rem 0.45rem 0.2rem 0.2rem;
+}
+
+.section-mark--attire::before {
+  top: 1.88rem;
+  width: 2.25rem;
+  height: 1.45rem;
+  clip-path: polygon(36% 0, 64% 0, 100% 100%, 0 100%);
+  border-radius: 0 0 0.32rem 0.32rem;
+}
+
+.section-mark--attire::after {
+  top: 0.72rem;
+  width: 0.86rem;
+  height: 0.38rem;
+  clip-path: polygon(0 0, 50% 45%, 100% 0, 72% 100%, 28% 100%);
+  background: #c7b294;
+}
+
+.dress-code-grid {
+  align-items: stretch;
+}
+
+.attire-card {
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.attire-card::after {
+  position: absolute;
+  inset: auto -12% -46% auto;
+  z-index: -1;
+  width: 13rem;
+  height: 13rem;
+  border-radius: 999px;
+  content: "";
+  opacity: 0.34;
+}
+
+.attire-card--women {
+  border-color: rgba(92, 108, 40, 0.28);
+  background: linear-gradient(155deg, rgba(250, 250, 244, 0.96), rgba(235, 239, 218, 0.78));
+}
+
+.attire-card--women::after {
+  background: #77863a;
+}
+
+.attire-card--men {
+  border-color: rgba(169, 145, 114, 0.26);
+  background: linear-gradient(155deg, rgba(255, 254, 250, 0.96), rgba(238, 228, 210, 0.8));
+}
+
+.attire-card--men::after {
+  background: #cbb493;
+}
+
+.attire-symbol {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 5.6rem;
+  height: 5.6rem;
+  margin: 0 auto 1.5rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.68);
+}
+
+.attire-symbol--dress span,
+.attire-symbol--dress::before,
+.attire-symbol--dress::after {
+  position: absolute;
+  content: "";
+  background: #62712f;
+}
+
+.attire-symbol--dress span {
+  top: 1.15rem;
+  width: 1.18rem;
+  height: 1.25rem;
+  border-radius: 0.52rem 0.52rem 0.18rem 0.18rem;
+}
+
+.attire-symbol--dress::before {
+  top: 2.15rem;
+  width: 3.2rem;
+  height: 2.15rem;
+  clip-path: polygon(38% 0, 62% 0, 100% 100%, 0 100%);
+  border-radius: 0 0 0.45rem 0.45rem;
+}
+
+.attire-symbol--dress::after {
+  top: 2rem;
+  width: 1.55rem;
+  height: 0.2rem;
+  border-radius: 999px;
+  background: #d6c49f;
+}
+
+.attire-symbol--suit {
+  background: rgba(255, 253, 248, 0.78);
+}
+
+.attire-symbol--suit span {
+  position: absolute;
+  top: 1.23rem;
+  width: 3rem;
+  height: 3.1rem;
+  border-radius: 0.32rem 0.32rem 0.52rem 0.52rem;
+  background: #d8c6aa;
+  clip-path: polygon(12% 0, 42% 0, 50% 17%, 58% 0, 88% 0, 100% 100%, 0 100%);
+}
+
+.attire-symbol--suit::before,
+.attire-symbol--suit::after {
+  position: absolute;
+  z-index: 1;
+  top: 1.35rem;
+  width: 1.25rem;
+  height: 1.8rem;
+  content: "";
+  background: #fffaf0;
+}
+
+.attire-symbol--suit::before {
+  left: 1.38rem;
+  clip-path: polygon(0 0, 100% 0, 100% 100%);
+}
+
+.attire-symbol--suit::after {
+  right: 1.38rem;
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+}
+
+.attire-palette {
+  display: flex;
+  justify-content: center;
+  gap: 0.55rem;
+  margin-top: 1.55rem;
+}
+
+.attire-palette span {
+  width: 2.25rem;
+  height: 0.72rem;
+  border: 1px solid rgba(89, 69, 51, 0.1);
+  border-radius: 999px;
+  background: var(--swatch);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+
+.section-mark--gift span,
+.section-mark--gift::before,
+.section-mark--gift::after,
+.gift-card__mark span,
+.gift-card__mark::before,
+.gift-card__mark::after {
+  position: absolute;
+  content: "";
+}
+
+.section-mark--gift span,
+.gift-card__mark span {
+  width: 2.45rem;
+  height: 1.72rem;
+  border: 2px solid #9f8569;
+  border-radius: 0.18rem 0.18rem 0.35rem 0.35rem;
+  background: rgba(255, 250, 243, 0.66);
+}
+
+.section-mark--gift span::before,
+.gift-card__mark span::before {
+  position: absolute;
+  top: -0.45rem;
+  left: -0.18rem;
+  width: 2.62rem;
+  height: 0.45rem;
+  border: 2px solid #9f8569;
+  border-radius: 0.18rem;
+  content: "";
+  background: #efe2d0;
+}
+
+.section-mark--gift::before,
+.gift-card__mark::before {
+  z-index: 2;
+  width: 0.32rem;
+  height: 2.12rem;
+  background: #71803a;
+}
+
+.section-mark--gift::after,
+.gift-card__mark::after {
+  z-index: 3;
+  top: 0.78rem;
+  width: 1.55rem;
+  height: 0.68rem;
+  border: 0.22rem solid #71803a;
+  border-bottom: 0;
+  border-radius: 999px 999px 0 0;
+}
+
+.gift-card {
+  position: relative;
+  overflow: hidden;
+  padding-left: clamp(2rem, 7vw, 8rem);
+  background: linear-gradient(135deg, rgba(255, 254, 250, 0.96), rgba(241, 232, 218, 0.7));
+}
+
+.gift-card__mark {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 4.5rem;
+  height: 4.5rem;
+  margin-bottom: 1.4rem;
+  border-radius: 1.35rem;
+  background: rgba(255, 255, 255, 0.64);
+}
+
+.gift-card__mark::after {
+  top: 0.62rem;
+}
+
 .location ul {
   margin: 1.35rem 0 0;
   padding-left: 1.2rem;
