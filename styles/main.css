@@ -736,35 +736,68 @@ main {
   box-shadow: 0 14px 36px rgba(103, 75, 49, 0.08);
 }
 
-.section-mark--attire span,
-.section-mark--attire::before,
-.section-mark--attire::after {
+.section-mark--couple {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.38rem;
+}
+
+.couple-figure {
   position: absolute;
+  bottom: 1rem;
+  width: 1.28rem;
+  height: 2.3rem;
+}
+
+.couple-figure--woman {
+  left: 0.92rem;
+}
+
+.couple-figure--man {
+  right: 0.92rem;
+}
+
+.couple-figure::before,
+.couple-figure::after {
+  position: absolute;
+  left: 50%;
   content: "";
+  transform: translateX(-50%);
+}
+
+.couple-figure::before {
+  top: 0;
+  width: 0.58rem;
+  height: 0.58rem;
+  border-radius: 999px;
+}
+
+.couple-figure::after {
+  bottom: 0;
+  height: 1.58rem;
+}
+
+.couple-figure--woman::before,
+.couple-figure--woman::after {
   background: #667331;
 }
 
-.section-mark--attire span {
-  top: 1.05rem;
-  width: 0.95rem;
-  height: 1rem;
-  border-radius: 0.45rem 0.45rem 0.2rem 0.2rem;
+.couple-figure--woman::after {
+  width: 1.28rem;
+  clip-path: polygon(38% 0, 62% 0, 100% 100%, 0 100%);
+  border-radius: 0 0 0.2rem 0.2rem;
 }
 
-.section-mark--attire::before {
-  top: 1.88rem;
-  width: 2.25rem;
-  height: 1.45rem;
-  clip-path: polygon(36% 0, 64% 0, 100% 100%, 0 100%);
-  border-radius: 0 0 0.32rem 0.32rem;
+.couple-figure--man::before,
+.couple-figure--man::after {
+  background: #b6a183;
 }
 
-.section-mark--attire::after {
-  top: 0.72rem;
-  width: 0.86rem;
-  height: 0.38rem;
-  clip-path: polygon(0 0, 50% 45%, 100% 0, 72% 100%, 28% 100%);
-  background: #c7b294;
+.couple-figure--man::after {
+  width: 1.08rem;
+  clip-path: polygon(16% 0, 42% 0, 50% 18%, 58% 0, 84% 0, 100% 100%, 0 100%);
+  border-radius: 0.16rem 0.16rem 0.2rem 0.2rem;
 }
 
 .dress-code-grid {
@@ -825,26 +858,22 @@ main {
 }
 
 .attire-symbol--dress span {
-  top: 1.15rem;
-  width: 1.18rem;
-  height: 1.25rem;
-  border-radius: 0.52rem 0.52rem 0.18rem 0.18rem;
+  top: 1.2rem;
+  width: 1.02rem;
+  height: 1.12rem;
+  border-radius: 0.48rem 0.48rem 0.16rem 0.16rem;
 }
 
 .attire-symbol--dress::before {
-  top: 2.15rem;
-  width: 3.2rem;
-  height: 2.15rem;
-  clip-path: polygon(38% 0, 62% 0, 100% 100%, 0 100%);
-  border-radius: 0 0 0.45rem 0.45rem;
+  top: 2.05rem;
+  width: 2.75rem;
+  height: 2.28rem;
+  clip-path: polygon(39% 0, 61% 0, 100% 100%, 0 100%);
+  border-radius: 0 0 0.38rem 0.38rem;
 }
 
 .attire-symbol--dress::after {
-  top: 2rem;
-  width: 1.55rem;
-  height: 0.2rem;
-  border-radius: 999px;
-  background: #d6c49f;
+  display: none;
 }
 
 .attire-symbol--suit {
@@ -853,33 +882,46 @@ main {
 
 .attire-symbol--suit span {
   position: absolute;
-  top: 1.23rem;
+  top: 1.28rem;
   width: 3rem;
-  height: 3.1rem;
-  border-radius: 0.32rem 0.32rem 0.52rem 0.52rem;
-  background: #d8c6aa;
-  clip-path: polygon(12% 0, 42% 0, 50% 17%, 58% 0, 88% 0, 100% 100%, 0 100%);
+  height: 3.05rem;
+  border-radius: 0.28rem 0.28rem 0.42rem 0.42rem;
+  background: #cdbb9f;
+  clip-path: polygon(9% 14%, 36% 0, 50% 20%, 64% 0, 91% 14%, 100% 100%, 0 100%);
 }
 
 .attire-symbol--suit::before,
 .attire-symbol--suit::after {
   position: absolute;
   z-index: 1;
-  top: 1.35rem;
-  width: 1.25rem;
-  height: 1.8rem;
+  top: 1.32rem;
+  width: 1.14rem;
+  height: 1.25rem;
   content: "";
   background: #fffaf0;
 }
 
 .attire-symbol--suit::before {
-  left: 1.38rem;
+  left: 1.47rem;
   clip-path: polygon(0 0, 100% 0, 100% 100%);
 }
 
 .attire-symbol--suit::after {
-  right: 1.38rem;
+  right: 1.47rem;
   clip-path: polygon(0 0, 100% 0, 0 100%);
+}
+
+.attire-symbol--suit span::before {
+  position: absolute;
+  top: 0.35rem;
+  left: 50%;
+  z-index: 3;
+  width: 0.34rem;
+  height: 1rem;
+  content: "";
+  clip-path: polygon(50% 0, 100% 25%, 72% 100%, 28% 100%, 0 25%);
+  background: #8f7b65;
+  transform: translateX(-50%);
 }
 
 .attire-palette {
