@@ -104,7 +104,7 @@ export default {
     const url = new URL(request.url);
     if (url.pathname === "/api/rsvp" && ["GET", "POST"].includes(request.method)) return handleRsvp(request, env);
     if (url.pathname === "/api/rsvp") return json({ ok: false, message: "Método no permitido." }, 405);
-    if (url.pathname.startsWith("/invite/")) return env.ASSETS.fetch(new Request(new URL("/index.html", request.url), request));
+    if (url.pathname.startsWith("/invite/")) return env.ASSETS.fetch(new Request(new URL("/", request.url), request));
     return env.ASSETS.fetch(request);
   },
 };
