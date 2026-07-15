@@ -104,7 +104,12 @@ export default {
     const url = new URL(request.url);
     if (url.pathname === "/api/rsvp" && ["GET", "POST"].includes(request.method)) return handleRsvp(request, env);
     if (url.pathname === "/api/rsvp") return json({ ok: false, message: "Método no permitido." }, 405);
-    if (url.pathname.startsWith("/invite/")) return env.ASSETS.fetch(new Request(new URL("/", request.url), request));
+    if (url.pathname.startsWith("/invite/")) {
+      const page = await env.ASSETS.fetch(new Request(new URL("/", request.url), request));
+      const headers = new Headers(page.headers);
+      headers.set("Cache-Control", "no-store");
+      return new Response(page.body, { status: page.status, statusText: page.statusText, headers });
+    }
     return env.ASSETS.fetch(request);
   },
 };
