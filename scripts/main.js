@@ -11,6 +11,10 @@
     hours: document.querySelector("[data-count='hours']"),
     minutes: document.querySelector("[data-count='minutes']"),
   };
+  var rsvpApp = document.getElementById("rsvp-app");
+  var personalRsvpEndpoint = rsvpApp
+    ? rsvpApp.getAttribute("data-rsvp-endpoint") || "/api/rsvp"
+    : "/api/rsvp";
   var form = document.getElementById("rsvp-form");
   var statusMessage = document.getElementById("rsvp-status");
   var choiceInputs = document.querySelectorAll(".choice input");
@@ -526,6 +530,348 @@
     setActiveGalleryItem(0);
   }
 
+  function setupPersonalRsvp() {
+    if (!rsvpApp) {
+      return;
+    }
+
+    function escapeHtml(value) {
+      return String(value == null ? "" : value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function codeFromUrl() {
+      var pathMatch = window.location.pathname.match(/\/invite\/([^/]+)/i);
+      var queryCode = new URLSearchParams(window.location.search).get("invite");
+
+      try {
+        return decodeURIComponent(pathMatch ? pathMatch[1] : queryCode || "")
+          .trim()
+          .toUpperCase();
+      } catch (error) {
+        return "";
+      }
+    }
+
+    function normalizeCode(value) {
+      return String(value || "")
+        .trim()
+        .toUpperCase()
+        .replace(/[^A-Z0-9]/g, "");
+    }
+
+    function setFormStatus(formElement, kind, message) {
+      var node = formElement.querySelector(".rsvp-form__status");
+
+      if (!node) {
+        return;
+      }
+
+      node.hidden = !message;
+      node.className = "rsvp-form__status" + (kind ? " is-" + kind : "");
+      node.textContent = message || "";
+    }
+
+    function renderCodeForm(errorMessage) {
+      rsvpApp.innerHTML = [
+        '<form class="rsvp-form rsvp-code-form" id="invite-code-form">',
+        '<div class="rsvp-invitation-summary">',
+        '<p class="field__label">Invitación personal</p>',
+        '<h3 class="card__title">Abre tu invitación</h3>',
+        '<p>Escribe el código incluido en el mensaje de invitación que te enviamos.</p>',
+        "</div>",
+        '<label class="field">',
+        '<span class="field__label">Código de invitación</span>',
+        '<input class="field__input rsvp-code-input" type="text" name="inviteCode" autocomplete="off" required />',
+        "</label>",
+        '<div class="rsvp-form__footer">',
+        '<button class="button button--solid" type="submit">Abrir invitación</button>',
+        '<p class="rsvp-form__status" hidden aria-live="polite"></p>',
+        "</div>",
+        "</form>",
+      ].join("");
+
+      var codeForm = rsvpApp.querySelector("#invite-code-form");
+      setFormStatus(codeForm, "error", errorMessage);
+      codeForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+        var nextCode = normalizeCode(codeForm.elements.inviteCode.value);
+
+        if (!nextCode) {
+          setFormStatus(codeForm, "error", "Escribe el código de tu invitación.");
+          return;
+        }
+
+        window.history.replaceState({}, "", "/invite/" + nextCode);
+        loadInvitation(nextCode);
+      });
+    }
+
+    function buildNameSlots(invitation, type, maximum) {
+      var savedGuests = invitation.rsvp ? invitation.rsvp.guests || [] : [];
+
+      return Array.from({ length: maximum }, function (_, slot) {
+        var savedGuest = savedGuests.find(function (guest) {
+          return guest.type === type && guest.slot === slot;
+        });
+
+        return {
+          slot: slot,
+          type: type,
+          name: savedGuest ? savedGuest.name : "",
+        };
+      });
+    }
+
+    function nameField(slot, index, label) {
+      return [
+        '<label class="field rsvp-name-slot" data-slot="' + slot.slot + '" data-type="' + slot.type + '">',
+        '<span class="field__label">' + label + " " + (index + 1) + "</span>",
+        '<input class="field__input" type="text" name="guestName" value="' +
+          escapeHtml(slot.name) + '" placeholder="Nombre completo" />',
+        "</label>",
+      ].join("");
+    }
+
+    function renderInvitation(code, invitation) {
+      var isPersonal = invitation.invitationType === "personal";
+      var adultSlots = isPersonal ? [] : buildNameSlots(invitation, "adult", invitation.maxAdults);
+      var childSlots = buildNameSlots(invitation, "child", invitation.maxChildren);
+      var attendance = invitation.rsvp ? invitation.rsvp.attendance : "yes";
+      var yesChecked = attendance === "yes" ? " checked" : "";
+      var noChecked = attendance === "no" ? " checked" : "";
+      var attendanceHidden = attendance === "yes" ? "" : " hidden";
+      var priorHelp = invitation.rsvp
+        ? '<p class="rsvp-invitation-summary__help">Pueden modificar su respuesta desde este mismo enlace.</p>'
+        : "";
+
+      rsvpApp.innerHTML = [
+        '<form class="rsvp-form" id="rsvp-form">',
+        '<input class="rsvp-form__hidden" type="text" name="website" autocomplete="off" tabindex="-1" />',
+        '<div class="rsvp-invitation-summary">',
+        '<p class="field__label">Invitación para</p>',
+        '<h3 class="card__title">' + escapeHtml(invitation.displayName) + "</h3>",
+        (!isPersonal || invitation.maxChildren) ? '<div class="rsvp-allocation">' : "",
+        !isPersonal
+          ? '<span><strong>' + invitation.maxAdults + "</strong> " +
+            (invitation.maxAdults === 1 ? "adulto" : "adultos") + "</span>"
+          : "",
+        invitation.maxChildren
+          ? '<span><strong>' + invitation.maxChildren + "</strong> " +
+            (invitation.maxChildren === 1 ? "niño" : "niños") + "</span>"
+          : "",
+        (!isPersonal || invitation.maxChildren) ? "</div>" : "",
+        priorHelp,
+        "</div>",
+        '<div class="field">',
+        '<span class="field__label">Asistencia</span>',
+        '<div class="field__choices">',
+        '<label class="choice' + (attendance === "yes" ? " choice--active" : "") + '">',
+        '<input type="radio" name="attendance" value="yes"' + yesChecked + " />",
+        "<span>Sí, asistiré</span>",
+        "</label>",
+        '<label class="choice' + (attendance === "no" ? " choice--active" : "") + '">',
+        '<input type="radio" name="attendance" value="no"' + noChecked + " />",
+        "<span>Lamento no poder asistir</span>",
+        "</label>",
+        "</div>",
+        "</div>",
+        '<div class="rsvp-attendance-fields"' + attendanceHidden + ">",
+        !isPersonal
+          ? '<p class="rsvp-name-help">Escriban solamente los nombres de quienes asistirán.</p>'
+          : "",
+        !isPersonal ? '<div class="rsvp-guest-group">' : "",
+        !isPersonal ? [
+        '<div class="rsvp-seat-heading">',
+        '<span class="field__label">Adultos</span>',
+        '<span class="rsvp-adult-count"></span>',
+        "</div>",
+        '<div class="rsvp-name-list">' +
+          adultSlots.map(function (slot, index) {
+            return nameField(slot, index, "Adulto");
+          }).join("") +
+        "</div>",
+        "</div>",
+        ].join("") : "",
+        invitation.maxChildren
+          ? [
+              '<div class="rsvp-guest-group">',
+              '<div class="rsvp-seat-heading">',
+              '<span class="field__label">Niños</span>',
+              '<span class="rsvp-child-count"></span>',
+              "</div>",
+              '<div class="rsvp-name-list">' +
+                childSlots.map(function (slot, index) {
+                  return nameField(slot, index, "Niño");
+                }).join("") +
+                "</div>",
+              "</div>",
+            ].join("")
+          : "",
+        "</div>",
+        '<label class="field">',
+        '<span class="field__label">Mensaje para nosotros</span>',
+        '<textarea class="field__input field__textarea" name="message">' +
+          escapeHtml(invitation.rsvp ? invitation.rsvp.message : "") +
+        "</textarea>",
+        "</label>",
+        '<div class="rsvp-form__footer">',
+        '<button class="button button--solid" type="submit">Enviar confirmación</button>',
+        '<p class="rsvp-form__status" hidden aria-live="polite"></p>',
+        "</div>",
+        "</form>",
+      ].join("");
+
+      var personalForm = rsvpApp.querySelector("#rsvp-form");
+      var attendanceFields = personalForm.querySelector(".rsvp-attendance-fields");
+      var adultCountNode = personalForm.querySelector(".rsvp-adult-count");
+      var childCountNode = personalForm.querySelector(".rsvp-child-count");
+      var attendanceInputs = Array.from(personalForm.querySelectorAll("input[name='attendance']"));
+      var nameSlots = Array.from(personalForm.querySelectorAll(".rsvp-name-slot"));
+      var personalSubmitButton = personalForm.querySelector("button[type='submit']");
+
+      function updateSeatCount() {
+        var adultCount = nameSlots.filter(function (slot) {
+          return slot.getAttribute("data-type") === "adult" &&
+            slot.querySelector("input").value.trim();
+        }).length;
+        var childCount = nameSlots.filter(function (slot) {
+          return slot.getAttribute("data-type") === "child" &&
+            slot.querySelector("input").value.trim();
+        }).length;
+
+        if (adultCountNode) adultCountNode.textContent = adultCount + " de " + invitation.maxAdults;
+        if (childCountNode) childCountNode.textContent = childCount + " de " + invitation.maxChildren;
+      }
+
+      function syncAttendance() {
+        var selected = personalForm.querySelector("input[name='attendance']:checked");
+        attendanceFields.hidden = !selected || selected.value !== "yes";
+        updateChoiceStates();
+      }
+
+      attendanceInputs.forEach(function (input) {
+        input.addEventListener("change", syncAttendance);
+      });
+
+      nameSlots.forEach(function (slot) {
+        slot.querySelector("input").addEventListener("input", updateSeatCount);
+      });
+
+      personalForm.addEventListener("submit", async function (event) {
+        event.preventDefault();
+        var selectedAttendance = personalForm.querySelector("input[name='attendance']:checked");
+        var attending = selectedAttendance ? selectedAttendance.value : "";
+        var guests = [];
+
+        if (attending === "yes") {
+          if (isPersonal) {
+            guests.push({ slot: 0, type: "adult", name: invitation.displayName });
+          }
+          nameSlots.forEach(function (slot) {
+            var name = slot.querySelector("input[name='guestName']").value.trim();
+            if (!name) return;
+
+            guests.push({
+              slot: Number(slot.getAttribute("data-slot")),
+              type: slot.getAttribute("data-type"),
+              name: name,
+            });
+          });
+        }
+
+        if (attending === "yes" && !guests.length) {
+          setFormStatus(personalForm, "error", "Selecciona al menos una persona que asistirá.");
+          return;
+        }
+
+        personalSubmitButton.disabled = true;
+        personalSubmitButton.textContent = "Guardando...";
+        setFormStatus(personalForm, "", "");
+
+        try {
+          var saveResponse = await fetch(personalRsvpEndpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              code: code,
+              website: personalForm.elements.website.value,
+              attendance: attending,
+              guests: guests,
+              message: personalForm.elements.message.value.trim(),
+            }),
+          });
+          var saveResult = await saveResponse.json().catch(function () {
+            return {};
+          });
+
+          if (!saveResponse.ok || !saveResult.ok) {
+            throw new Error(saveResult.message || "No pudimos guardar su confirmación.");
+          }
+
+          renderInvitation(code, saveResult.invitation);
+          setFormStatus(
+            rsvpApp.querySelector("#rsvp-form"),
+            "success",
+            "Gracias. Su confirmación quedó guardada y pueden actualizarla desde este mismo enlace.",
+          );
+        } catch (error) {
+          personalSubmitButton.disabled = false;
+          personalSubmitButton.textContent = "Enviar confirmación";
+          setFormStatus(personalForm, "error", error.message);
+        }
+      });
+
+      syncAttendance();
+      updateSeatCount();
+    }
+
+    async function loadInvitation(code) {
+      rsvpApp.innerHTML = '<p class="rsvp-loading">Estamos preparando tu invitación...</p>';
+
+      try {
+        var lookupResponse = await fetch(
+          personalRsvpEndpoint + "?code=" + encodeURIComponent(code),
+        );
+        var lookupResult = await lookupResponse.json().catch(function () {
+          return {};
+        });
+
+        if (!lookupResponse.ok || !lookupResult.ok) {
+          throw new Error(
+            lookupResult.message || "No pudimos cargar esta invitación.",
+          );
+        }
+
+        renderInvitation(code, lookupResult.invitation);
+      } catch (error) {
+        renderCodeForm(error.message || "No pudimos cargar esta invitación.");
+      }
+    }
+
+    var initialCode = normalizeCode(codeFromUrl());
+    if (initialCode) {
+      loadInvitation(initialCode);
+    } else {
+      var initialCodeForm = rsvpApp.querySelector("#invite-code-form");
+      if (initialCodeForm) {
+        initialCodeForm.addEventListener("submit", function (event) {
+          event.preventDefault();
+          var nextCode = normalizeCode(initialCodeForm.elements.inviteCode.value);
+          if (!nextCode) return;
+          window.history.replaceState({}, "", "/invite/" + nextCode);
+          loadInvitation(nextCode);
+        });
+      } else {
+        renderCodeForm();
+      }
+    }
+  }
+
   choiceInputs.forEach(function (input) {
     input.addEventListener("change", updateChoiceStates);
   });
@@ -679,5 +1025,6 @@
   setupReveal();
   setupGallery();
   setupHeroVideo();
+  setupPersonalRsvp();
   setAudioState(true);
 })();

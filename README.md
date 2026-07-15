@@ -1,86 +1,56 @@
-# Sitio de Boda de Regnier & Alizee
+# Invitaciones de boda de Regnier & Alizee
 
-La versión pública del sitio puede quedar hospedada en internet con RSVP real, sin depender de tu computadora, usando Vercel para el frontend/API y GitHub como almacenamiento del archivo Excel.
+Cada familia recibe un enlace personal. Al abrirlo verá:
 
-## Qué hace ahora
+- el nombre de la familia;
+- cuántas invitaciones para adultos tiene;
+- cuántas invitaciones para niños tiene;
+- espacios para escribir solamente los nombres de quienes asistirán.
 
-- El formulario RSVP envía a `POST /api/rsvp`
-- La función serverless valida duplicados
-- El backend actualiza `data/rsvp-confirmations.xlsx` directamente en `main`
-- El archivo queda visible después en GitHub
+Ejemplo: **Familia García · 4 adultos · 2 niños**.
 
-## Despliegue recomendado
+## Lo único que debes editar
 
-Usa este repo en Vercel.
+Abre este archivo con Excel o Numbers:
 
-### 1. Conecta el repo a Vercel
-
-Importa el repositorio en Vercel y deja que detecte el proyecto.
-
-### 2. Agrega estas variables de entorno en Vercel
-
-Puedes copiarlas de `.env.example`:
-
-```bash
-GITHUB_TOKEN=
-GITHUB_OWNER=RRegnieRR
-GITHUB_REPO=WeddingInvitation
-GITHUB_BRANCH=main
-RSVP_FILE_PATH=data/rsvp-confirmations.xlsx
-RSVP_COMMITTER_NAME=Wedding RSVP Bot
-RSVP_COMMITTER_EMAIL=bot@example.com
+```text
+outputs/wedding-rsvp/lista-de-invitados.xlsx
 ```
 
-### 3. Token de GitHub
+Escribe una familia o una persona por fila usando únicamente estas tres columnas:
 
-El `GITHUB_TOKEN` debe ser un fine-grained personal access token con permiso de escritura en Contents para este repositorio.
+| Nombre en la invitación | Invitaciones adultos | Invitaciones niños |
+|---|---:|---:|
+| Familia Palacios García | 4 | 2 |
+| McKay Stacey | 1 | 0 |
 
-### 4. Publica el sitio
+Escribe exactamente lo que quieres que aparezca después de “Invitación para”. Los invitados escribirán los nombres de quienes asistirán cuando confirmen.
 
-Después del deploy, comparte el dominio de Vercel con los invitados. Ahí el formulario sí podrá guardar respuestas reales desde internet.
+## Después de llenar el archivo
 
-## Archivo Excel
+Pídele a Codex: **“Ya llené mi lista de invitados; prepara los enlaces.”** Codex puede encargarse de los pasos técnicos restantes.
 
-Las confirmaciones quedan en:
+## Configuración técnica, solo una vez
+
+El sistema usa Supabase para guardar las respuestas y Vercel para publicar la página. Antes de crear los enlaces se necesita:
+
+1. Crear un proyecto en Supabase.
+2. Ejecutar `supabase/schema.sql` en su SQL Editor.
+3. Copiar `.env.example` a `.env.local` y completar las tres variables.
+4. Agregar `SUPABASE_URL` y `SUPABASE_SERVICE_ROLE_KEY` también en Vercel.
+
+Después se ejecuta:
 
 ```bash
-data/rsvp-confirmations.xlsx
+npm run guests:import
 ```
 
-Ese archivo se actualiza por commits automáticos hechos por la función RSVP.
+Esto genera `data/invitation-links.csv` con un enlace privado para cada familia.
 
-## Límite de una confirmación
-
-El sistema bloquea:
-
-- mismo nombre normalizado
-- mismo navegador/dispositivo
-
-## Desarrollo local
-
-### Ver solo el sitio estático
+## Verificación del proyecto
 
 ```bash
-open index.html
-```
-
-### Backend local opcional
-
-```bash
-npm install
-npm run rsvp:server
-```
-
-## Scripts
-
-```bash
-npm run rsvp:init
-npm run rsvp:server
-npm run dev
+npm run guests:check
+npm run test:rsvp
 npm run build
-npm run preview
 ```
-
-## Importante
-
-GitHub Pages por sí solo no puede escribir el Excel. Para que invitados reales lo usen desde internet, debes usar el deploy con backend serverless.

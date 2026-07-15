@@ -5,13 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node scripts/build-sites.mjs",
     "preview": "vite preview",
-    "rsvp:init": "node server/rsvp-server.mjs --init-only",
-    "rsvp:server": "node server/rsvp-server.mjs"
+    "guests:import": "node scripts/import-guests.mjs",
+    "guests:check": "node scripts/import-guests.mjs --check-only",
+    "test:rsvp": "node scripts/test-rsvp.mjs"
   },
   "dependencies": {
-    "express": "^5.2.1",
     "framer-motion": "^12.10.5",
     "lucide-react": "^0.511.0",
     "react": "^18.3.1",

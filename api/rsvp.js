@@ -1,236 +1,10 @@
-import XLSX from "xlsx";
+import { createHash } from "node:crypto";
 
-const SHEET_NAME = "RSVPs";
-const RSVP_HEADERS = [
-  "ID",
-  "Fecha ISO",
-  "Nombre",
-  "Nombre normalizado",
-  "Asistencia",
-  "Niños",
-  "Mensaje",
-  "Dispositivo",
-];
+const INVITATION_SELECT =
+  "id,display_name,invitation_type,max_adults,max_children";
 
 function json(response, statusCode, body) {
   response.status(statusCode).json(body);
-}
-
-function normalizeName(value) {
-  return String(value || "")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, " ")
-    .trim();
-}
-
-function normalizeDeviceId(value) {
-  return String(value || "")
-    .toLowerCase()
-    .replace(/[^a-z0-9-]+/g, "")
-    .trim();
-}
-
-function parseCookies(cookieHeader) {
-  return String(cookieHeader || "")
-    .split(";")
-    .map((part) => part.trim())
-    .filter(Boolean)
-    .reduce((accumulator, part) => {
-      const separatorIndex = part.indexOf("=");
-
-      if (separatorIndex === -1) {
-        return accumulator;
-      }
-
-      const key = part.slice(0, separatorIndex).trim();
-      const value = part.slice(separatorIndex + 1).trim();
-      accumulator[key] = decodeURIComponent(value);
-      return accumulator;
-    }, {});
-}
-
-function createWorkbook(rows = []) {
-  const sheetRows = [
-    RSVP_HEADERS,
-    ...rows.map((row) => RSVP_HEADERS.map((header) => row[header] || "")),
-  ];
-  const worksheet = XLSX.utils.aoa_to_sheet(sheetRows);
-  worksheet["!cols"] = [
-    { wch: 16 },
-    { wch: 24 },
-    { wch: 28 },
-    { wch: 28 },
-    { wch: 18 },
-    { wch: 12 },
-    { wch: 56 },
-    { wch: 28 },
-  ];
-
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, SHEET_NAME);
-  return workbook;
-}
-
-function parseWorkbookContent(base64Content) {
-  if (!base64Content) {
-    return [];
-  }
-
-  const buffer = Buffer.from(base64Content, "base64");
-  const workbook = XLSX.read(buffer, { type: "buffer" });
-  const worksheet = workbook.Sheets[SHEET_NAME];
-
-  if (!worksheet) {
-    return [];
-  }
-
-  return XLSX.utils.sheet_to_json(worksheet, { defval: "" });
-}
-
-function workbookRowsToBase64(rows) {
-  const workbook = createWorkbook(rows);
-  const output = XLSX.write(workbook, {
-    type: "buffer",
-    bookType: "xlsx",
-  });
-  return Buffer.from(output).toString("base64");
-}
-
-function getRequiredEnv(name) {
-  const value = process.env[name];
-
-  if (!value) {
-    throw new Error(`Missing required environment variable: ${name}`);
-  }
-
-  return value;
-}
-
-function buildGitHubHeaders() {
-  return {
-    Accept: "application/vnd.github+json",
-    Authorization: `Bearer ${getRequiredEnv("GITHUB_TOKEN")}`,
-    "X-GitHub-Api-Version": "2022-11-28",
-    "User-Agent": "wedding-rsvp-server",
-  };
-}
-
-function getRepoConfig() {
-  return {
-    owner: getRequiredEnv("GITHUB_OWNER"),
-    repo: getRequiredEnv("GITHUB_REPO"),
-    branch: process.env.GITHUB_BRANCH || "main",
-    path: process.env.RSVP_FILE_PATH || "data/rsvp-confirmations.xlsx",
-    committerName:
-      process.env.RSVP_COMMITTER_NAME || "Wedding RSVP Bot",
-    committerEmail:
-      process.env.RSVP_COMMITTER_EMAIL || "bot@example.com",
-  };
-}
-
-async function fetchWorkbookFromGitHub(config) {
-  const fileUrl = new URL(
-    `https://api.github.com/repos/${config.owner}/${config.repo}/contents/${config.path}`,
-  );
-  fileUrl.searchParams.set("ref", config.branch);
-
-  const response = await fetch(fileUrl, {
-    headers: buildGitHubHeaders(),
-  });
-
-  if (response.status === 404) {
-    return {
-      sha: null,
-      rows: [],
-    };
-  }
-
-  if (!response.ok) {
-    throw new Error(`GitHub read failed with status ${response.status}`);
-  }
-
-  const payload = await response.json();
-
-  return {
-    sha: payload.sha,
-    rows: parseWorkbookContent(payload.content),
-  };
-}
-
-async function saveWorkbookToGitHub(config, rows, sha) {
-  const response = await fetch(
-    `https://api.github.com/repos/${config.owner}/${config.repo}/contents/${config.path}`,
-    {
-      method: "PUT",
-      headers: {
-        ...buildGitHubHeaders(),
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        message: `Save RSVP for ${rows[rows.length - 1]?.Nombre || "guest"}`,
-        content: workbookRowsToBase64(rows),
-        branch: config.branch,
-        sha: sha || undefined,
-        committer: {
-          name: config.committerName,
-          email: config.committerEmail,
-        },
-      }),
-    },
-  );
-
-  if (response.status === 409) {
-    return {
-      conflict: true,
-    };
-  }
-
-  if (!response.ok) {
-    const details = await response.text();
-    throw new Error(
-      `GitHub write failed with status ${response.status}: ${details}`,
-    );
-  }
-
-  return {
-    conflict: false,
-  };
-}
-
-function findDuplicate(rows, normalizedName, deviceId, cookieDeviceId) {
-  const duplicateByName = rows.find(
-    (row) =>
-      normalizeName(row["Nombre normalizado"] || row["Nombre"]) === normalizedName,
-  );
-
-  if (duplicateByName) {
-    return {
-      reason: "name",
-      message: "Ya existe una confirmación registrada con ese nombre.",
-    };
-  }
-
-  const duplicateByDevice = rows.find(
-    (row) => normalizeDeviceId(row["Dispositivo"]) === deviceId,
-  );
-
-  if (duplicateByDevice) {
-    return {
-      reason: "device",
-      message: "Este dispositivo ya envió una confirmación anteriormente.",
-    };
-  }
-
-  if (cookieDeviceId && cookieDeviceId === deviceId) {
-    return {
-      reason: "device",
-      message: "Este navegador ya había enviado una confirmación.",
-    };
-  }
-
-  return null;
 }
 
 function readRequestBody(request) {
@@ -241,7 +15,7 @@ function readRequestBody(request) {
   if (typeof request.body === "string") {
     try {
       return JSON.parse(request.body);
-    } catch (error) {
+    } catch {
       return {};
     }
   }
@@ -249,22 +23,161 @@ function readRequestBody(request) {
   return request.body;
 }
 
-function setSubmissionCookie(request, response, deviceId) {
-  const isSecure =
-    request.headers["x-forwarded-proto"] === "https" ||
-    process.env.NODE_ENV === "production";
-  const parts = [
-    `wedding_rsvp_device=${encodeURIComponent(deviceId)}`,
-    "Path=/",
-    "Max-Age=31536000",
-    "SameSite=Lax",
-  ];
+function getRequiredEnv(name) {
+  const value = process.env[name];
 
-  if (isSecure) {
-    parts.push("Secure");
+  if (!value) {
+    throw new Error(`Missing required environment variable: ${name}`);
   }
 
-  response.setHeader("Set-Cookie", parts.join("; "));
+  return value.replace(/\/$/, "");
+}
+
+function supabaseHeaders(extra = {}) {
+  const serviceRoleKey = getRequiredEnv("SUPABASE_SERVICE_ROLE_KEY");
+
+  return {
+    apikey: serviceRoleKey,
+    Authorization: `Bearer ${serviceRoleKey}`,
+    "Content-Type": "application/json",
+    ...extra,
+  };
+}
+
+function normalizeCode(value) {
+  return String(value || "")
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, "");
+}
+
+function hashCode(code) {
+  return createHash("sha256").update(code).digest("hex");
+}
+
+function cleanText(value, maxLength) {
+  return String(value || "").trim().slice(0, maxLength);
+}
+
+async function supabaseRequest(path, options = {}) {
+  const response = await fetch(
+    `${getRequiredEnv("SUPABASE_URL")}/rest/v1/${path}`,
+    {
+      ...options,
+      headers: supabaseHeaders(options.headers),
+    },
+  );
+
+  if (!response.ok) {
+    const details = await response.text();
+    throw new Error(`Supabase request failed (${response.status}): ${details}`);
+  }
+
+  if (response.status === 204) {
+    return null;
+  }
+
+  return response.json();
+}
+
+async function findInvitation(code) {
+  const codeHash = hashCode(code);
+  const rows = await supabaseRequest(
+    `invitations?code_hash=eq.${codeHash}&select=${INVITATION_SELECT}&limit=1`,
+  );
+
+  return rows[0] || null;
+}
+
+async function findRsvp(invitationId) {
+  const rows = await supabaseRequest(
+    `rsvps?invitation_id=eq.${encodeURIComponent(invitationId)}&select=attendance,email,guests,message,updated_at&limit=1`,
+  );
+
+  return rows[0] || null;
+}
+
+function publicInvitation(invitation, rsvp) {
+  return {
+    displayName: invitation.display_name,
+    invitationType: invitation.invitation_type || "family",
+    maxAdults: invitation.max_adults,
+    maxChildren: invitation.max_children,
+    rsvp: rsvp
+      ? {
+          attendance: rsvp.attendance ? "yes" : "no",
+          email: rsvp.email || "",
+          guests: Array.isArray(rsvp.guests) ? rsvp.guests : [],
+          message: rsvp.message || "",
+          updatedAt: rsvp.updated_at,
+        }
+      : null,
+  };
+}
+
+function validateGuests(payload, invitation, attendance) {
+  if (!Array.isArray(payload.guests)) {
+    return { error: "Agrega los nombres de las personas que asistirán." };
+  }
+
+  let guests = payload.guests.map((guest, index) => {
+    const slot = Number.isInteger(guest?.slot) ? guest.slot : index;
+    const type = guest?.type === "child" ? "child" : "adult";
+
+    return {
+      slot,
+      type,
+      name: cleanText(guest?.name, 100),
+    };
+  });
+
+  if (invitation.invitation_type === "personal" && attendance === "yes") {
+    guests = [
+      { slot: 0, type: "adult", name: cleanText(invitation.display_name, 100) },
+      ...guests.filter((guest) => guest.type === "child"),
+    ];
+  }
+
+  if (attendance === "yes" && guests.length === 0) {
+    return { error: "Selecciona al menos una persona que asistirá." };
+  }
+
+  if (attendance === "no" && guests.length > 0) {
+    return { error: "Una confirmación de no asistencia no puede incluir asistentes." };
+  }
+
+  if (guests.some((guest) => guest.name.length < 2)) {
+    return { error: "Escribe el nombre de cada persona que asistirá." };
+  }
+
+  const adults = guests.filter((guest) => guest.type === "adult");
+  const children = guests.filter((guest) => guest.type === "child");
+
+  if (adults.length > invitation.max_adults) {
+    return {
+      error: `Esta invitación incluye un máximo de ${invitation.max_adults} adultos.`,
+    };
+  }
+
+  if (children.length > invitation.max_children) {
+    return {
+      error: `Esta invitación incluye un máximo de ${invitation.max_children} niños.`,
+    };
+  }
+
+  const guestSlots = guests.map((guest) => `${guest.type}:${guest.slot}`);
+  if (
+    guests.some((guest) =>
+      guest.slot < 0 ||
+      guest.slot >=
+        (guest.type === "child" ? invitation.max_children : invitation.max_adults)
+    ) ||
+    new Set(guestSlots).size !== guestSlots.length
+  ) {
+    return { error: "Los lugares seleccionados no son válidos." };
+  }
+
+  return { guests, adultCount: adults.length, childCount: children.length };
 }
 
 export default async function handler(request, response) {
@@ -275,131 +188,101 @@ export default async function handler(request, response) {
     return;
   }
 
-  if (request.method === "GET") {
-    json(response, 200, {
-      ok: true,
-      mode: "github",
-    });
-    return;
-  }
-
-  if (request.method !== "POST") {
-    json(response, 405, {
-      ok: false,
-      message: "Método no permitido.",
-    });
+  if (!["GET", "POST"].includes(request.method)) {
+    json(response, 405, { ok: false, message: "Método no permitido." });
     return;
   }
 
   try {
-    const payload = readRequestBody(request);
-    const cookies = parseCookies(request.headers.cookie);
-    const honeypot = String(payload.website || "").trim();
-    const name = String(payload.name || "").trim();
-    const normalizedName = normalizeName(name);
-    const attendance = String(payload.attendance || "").trim();
-    const children = String(payload.children || "").trim();
-    const message = String(payload.message || "").trim();
-    const deviceId = normalizeDeviceId(payload.deviceId);
-    const cookieDeviceId = normalizeDeviceId(cookies.wedding_rsvp_device);
+    const payload = request.method === "POST" ? readRequestBody(request) : {};
+    const code = normalizeCode(
+      request.method === "GET" ? request.query?.code : payload.code,
+    );
 
-    if (honeypot) {
+    if (code.length < 8 || code.length > 32) {
       json(response, 400, {
         ok: false,
-        message: "Solicitud inválida.",
+        message: "El código de invitación no es válido.",
       });
       return;
     }
 
-    if (!normalizedName || name.length < 2) {
-      json(response, 400, {
+    const invitation = await findInvitation(code);
+
+    if (!invitation) {
+      json(response, 404, {
         ok: false,
-        message: "Escribe un nombre válido para guardar la confirmación.",
+        message: "No encontramos esta invitación. Revisa el enlace que recibiste.",
       });
       return;
     }
+
+    if (request.method === "GET") {
+      const rsvp = await findRsvp(invitation.id);
+      json(response, 200, {
+        ok: true,
+        invitation: publicInvitation(invitation, rsvp),
+      });
+      return;
+    }
+
+    if (cleanText(payload.website, 200)) {
+      json(response, 400, { ok: false, message: "Solicitud inválida." });
+      return;
+    }
+
+    const attendance = cleanText(payload.attendance, 3);
 
     if (!["yes", "no"].includes(attendance)) {
       json(response, 400, {
         ok: false,
-        message: "Selecciona si asistirás o no asistirás.",
+        message: "Selecciona si podrán acompañarnos.",
       });
       return;
     }
 
-    if (!["yes", "no"].includes(children)) {
+    const guestResult = validateGuests(payload, invitation, attendance);
+
+    if (guestResult.error) {
+      json(response, 400, { ok: false, message: guestResult.error });
+      return;
+    }
+
+    const email = cleanText(payload.email, 160);
+
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       json(response, 400, {
         ok: false,
-        message: "Selecciona si asistirán niños.",
+        message: "Escribe un correo válido o deja el campo vacío.",
       });
       return;
     }
 
-    if (!deviceId || deviceId.length < 10) {
-      json(response, 400, {
-        ok: false,
-        message: "No se pudo identificar este dispositivo.",
-      });
-      return;
-    }
+    const savedRows = await supabaseRequest("rsvps?on_conflict=invitation_id", {
+      method: "POST",
+      headers: { Prefer: "resolution=merge-duplicates,return=representation" },
+      body: JSON.stringify({
+        invitation_id: invitation.id,
+        attendance: attendance === "yes",
+        adult_count: guestResult.adultCount,
+        child_count: guestResult.childCount,
+        guests: guestResult.guests,
+        email,
+        message: cleanText(payload.message, 1000),
+        updated_at: new Date().toISOString(),
+      }),
+    });
 
-    const config = getRepoConfig();
-
-    for (let attempt = 0; attempt < 3; attempt += 1) {
-      const { rows, sha } = await fetchWorkbookFromGitHub(config);
-      const duplicate = findDuplicate(
-        rows,
-        normalizedName,
-        deviceId,
-        cookieDeviceId,
-      );
-
-      if (duplicate) {
-        json(response, 409, {
-          ok: false,
-          duplicate: true,
-          reason: duplicate.reason,
-          message: duplicate.message,
-        });
-        return;
-      }
-
-      const timestamp = new Date().toISOString();
-      const nextRows = rows.concat({
-        ID: `RSVP-${rows.length + 1}`,
-        "Fecha ISO": timestamp,
-        Nombre: name,
-        "Nombre normalizado": normalizedName,
-        Asistencia: attendance === "yes" ? "Sí, asistiré" : "No asistiré",
-        Niños: children === "yes" ? "Sí" : "No",
-        Mensaje: message,
-        Dispositivo: deviceId,
-      });
-
-      const result = await saveWorkbookToGitHub(config, nextRows, sha);
-
-      if (!result.conflict) {
-        setSubmissionCookie(request, response, deviceId);
-        json(response, 201, {
-          ok: true,
-          message:
-            "La confirmación se guardó correctamente y ya quedó actualizada en GitHub.",
-        });
-        return;
-      }
-    }
-
-    json(response, 409, {
-      ok: false,
-      message:
-        "Se cruzó otra confirmación al mismo tiempo. Intenta enviarla nuevamente.",
+    json(response, 200, {
+      ok: true,
+      message: "Su confirmación se guardó correctamente.",
+      invitation: publicInvitation(invitation, savedRows?.[0] || null),
     });
   } catch (error) {
     console.error(error);
     json(response, 500, {
       ok: false,
-      message:
-        "No se pudo guardar la confirmación en GitHub. Revisa las variables de entorno del backend.",
+      message: "No pudimos guardar la confirmación. Inténtalo nuevamente.",
     });
   }
 }

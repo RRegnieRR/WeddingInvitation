@@ -302,14 +302,9 @@
           </p>
           <div class="grid-two">
             <article class="card card--padded">
-              <h3 class="card__title">CaixaBank – Alizee</h3>
-              <p>IBAN: ES12 2100 0418 4502 0005 1332</p>
+              <h3 class="card__title">Nu Bank – Alizee</h3>
+              <p>Clave: ES12 2100 0418 4502 0005 1332</p>
               <p>SWIFT: CAIXESBBXXX</p>
-            </article>
-            <article class="card card--padded">
-              <h3 class="card__title">Banco Santander – Regnier</h3>
-              <p>IBAN: ES76 0049 1500 5127 1034 2799</p>
-              <p>SWIFT: BSCHESMMXXX</p>
             </article>
           </div>
         </div>
@@ -322,66 +317,32 @@
             <h2 class="section__title section__title--left">
               Queremos saber si podrán acompañarnos
             </h2>
-            <form
-              class="rsvp-form"
-              id="rsvp-form"
-              data-rsvp-endpoint="/api/rsvp"
-            >
-              <input
-                class="rsvp-form__hidden"
-                type="text"
-                name="website"
-                autocomplete="off"
-                tabindex="-1"
-              />
-
-              <div class="field">
-                <span class="field__label">Asistencia</span>
-                <div class="field__choices">
-                  <label class="choice choice--active">
-                    <input type="radio" name="attendance" value="yes" checked />
-                    <span>Sí, asistiré</span>
-                  </label>
-                  <label class="choice">
-                    <input type="radio" name="attendance" value="no" />
-                    <span>Lamento no poder asistir</span>
-                  </label>
+            <div id="rsvp-app" data-rsvp-endpoint="/api/rsvp">
+              <form class="rsvp-form rsvp-code-form" id="invite-code-form">
+                <div class="rsvp-invitation-summary">
+                  <p class="field__label">Invitación personal</p>
+                  <h3 class="card__title">Abre tu invitación</h3>
+                  <p>
+                    Escribe el código incluido en el mensaje de invitación que te enviamos.
+                  </p>
                 </div>
-              </div>
-
-              <label class="field">
-                <span class="field__label">Persona 1 (Contacto principal)</span>
-                <input class="field__input" type="text" name="name" placeholder="Nombre" required />
-              </label>
-
-              <div class="field">
-                <span class="field__label">¿Asisten niños?</span>
-                <div class="field__choices field__choices--compact">
-                  <label class="choice choice--pill">
-                    <input type="radio" name="children" value="yes" />
-                    <span>Sí</span>
-                  </label>
-                  <label class="choice choice--pill choice--active">
-                    <input type="radio" name="children" value="no" checked />
-                    <span>No</span>
-                  </label>
+                <label class="field">
+                  <span class="field__label">Código de invitación</span>
+                  <input
+                    class="field__input rsvp-code-input"
+                    type="text"
+                    name="inviteCode"
+                    autocomplete="off"
+                    inputmode="text"
+                    required
+                  />
+                </label>
+                <div class="rsvp-form__footer">
+                  <button class="button button--solid" type="submit">Abrir invitación</button>
+                  <p class="rsvp-form__status" hidden aria-live="polite"></p>
                 </div>
-              </div>
-
-              <label class="field">
-                <span class="field__label">Mensaje para nosotros</span>
-                <textarea class="field__input field__textarea" name="message" placeholder="Mensaje para nosotros"></textarea>
-              </label>
-
-              <div class="rsvp-form__footer">
-                <button class="button button--solid" type="submit">
-                  Enviar confirmación
-                </button>
-                <p class="rsvp-form__status" id="rsvp-status" hidden aria-live="polite">
-                  Gracias. Tu confirmación quedó lista con mucho cariño.
-                </p>
-              </div>
-            </form>
+              </form>
+            </div>
           </div>
         </div>
       </section>

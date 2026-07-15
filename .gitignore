@@ -1,3 +1,9 @@
 node_modules/
 dist/
 .DS_Store
+.env.local
+data/guest-list.json
+data/invitation-links.csv
+data/invitation-links.json
+outputs/wedding-rsvp/*
+!outputs/wedding-rsvp/lista-de-invitados.xlsx
