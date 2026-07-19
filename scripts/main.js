@@ -69,15 +69,32 @@
 
   function attemptPlay() {
     if (!audio) {
-      return;
+      return Promise.resolve(false);
     }
 
     audio.volume = 0.5;
-    var promise = audio.play();
+    return Promise.resolve(audio.play())
+      .then(function () {
+        syncAudioToggle();
+        return true;
+      })
+      .catch(function () {
+        syncAudioToggle();
+        return false;
+      });
+  }
 
-    if (promise && typeof promise.catch === "function") {
-      promise.catch(function () {});
+  function syncAudioToggle() {
+    if (!audio || !audioToggle) {
+      return;
     }
+
+    var isPlaying = !audio.paused && !audio.ended && !audio.error;
+    audioToggle.setAttribute("aria-pressed", isPlaying ? "true" : "false");
+    audioToggle.setAttribute(
+      "aria-label",
+      isPlaying ? "Pausar música" : "Reproducir música",
+    );
   }
 
   function selectRandomAudioTrack() {
@@ -108,13 +125,10 @@
     }
 
     if (isEnabled) {
-      audioToggle.setAttribute("aria-pressed", "true");
-      audioToggle.setAttribute("aria-label", "Pausar música");
       attemptPlay();
     } else {
       audio.pause();
-      audioToggle.setAttribute("aria-pressed", "false");
-      audioToggle.setAttribute("aria-label", "Reproducir música");
+      syncAudioToggle();
     }
   }
 
@@ -224,12 +238,17 @@
       return;
     }
 
+    if (hero.dataset.videoFrozen === "true") {
+      return;
+    }
+
+    hero.dataset.videoFrozen = "true";
     hero.classList.add("is-video-ended");
     heroVideo.pause();
 
     if (Number.isFinite(heroVideo.duration) && heroVideo.duration > 0) {
       try {
-        heroVideo.currentTime = Math.max(heroVideo.duration - 0.001, 0);
+        heroVideo.currentTime = Math.max(heroVideo.duration - 0.2, 0);
       } catch (error) {}
     }
   }
@@ -254,6 +273,7 @@
 
     function disableHeroVideo() {
       heroVideo.pause();
+      delete hero.dataset.videoFrozen;
       hero.classList.add("is-video-fallback");
       hero.classList.remove("is-video-ended");
 
@@ -271,6 +291,7 @@
 
       hero.classList.remove("is-video-fallback");
       hero.classList.remove("is-video-ended");
+      delete hero.dataset.videoFrozen;
 
       if (heroVideo.getAttribute("src") !== introSrc) {
         heroVideo.src = introSrc;
@@ -1122,16 +1143,22 @@
   }
 
   audioToggle.addEventListener("click", function () {
-    var enabled = audioToggle.getAttribute("aria-pressed") !== "true";
+    var enabled = audio.paused || audio.ended;
     setAudioState(enabled);
+  });
+
+  ["play", "playing", "pause", "ended", "error"].forEach(function (eventName) {
+    audio.addEventListener(eventName, syncAudioToggle);
   });
 
   window.addEventListener(
     "pointerdown",
-    function () {
-      if (audioToggle.getAttribute("aria-pressed") === "true") {
-        attemptPlay();
+    function (event) {
+      if (event.target.closest && event.target.closest("#audio-toggle")) {
+        return;
       }
+
+      attemptPlay();
     },
     { once: true },
   );
@@ -1156,5 +1183,6 @@
   setupHeroVideo();
   setupPersonalRsvp();
   selectRandomAudioTrack();
-  setAudioState(true);
+  syncAudioToggle();
+  attemptPlay();
 })();
