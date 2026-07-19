@@ -1,14 +1,19 @@
 import { createHash, randomBytes } from "node:crypto";
+import * as nodeFs from "node:fs";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import XLSX from "xlsx";
+import * as XLSX from "xlsx";
+import { invitationSeeds } from "../worker/invitations.generated.js";
+
+XLSX.set_fs(nodeFs);
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const envPath = resolve(root, ".env.local");
 const guestListPath = resolve(root, "outputs/wedding-rsvp/lista-de-invitados.xlsx");
 const savedLinksPath = resolve(root, "data/invitation-links.json");
 const csvPath = resolve(root, "data/invitation-links.csv");
+const productionSiteUrl = "https://regnier-alizee-boda.joseregnier14.chatgpt.site";
 
 function loadLocalEnv() {
   if (!existsSync(envPath)) return;
@@ -89,10 +94,13 @@ const spreadsheetRows = XLSX.utils.sheet_to_json(worksheet, {
   defval: "",
   range: 3,
 });
-const guests = spreadsheetRows
+const guestRows = spreadsheetRows.filter((row) => {
+  const displayName = String(row["Nombre en la invitación"] || "").trim();
+  return displayName && !isSectionLabel(displayName);
+});
+const guests = guestRows
   .map((row) => {
     const displayName = String(row["Nombre en la invitación"] || "").trim();
-    if (!displayName || isSectionLabel(displayName)) return null;
     const maxAdults = Number(row["Invitaciones adultos"] || 0);
     const maxChildren = Number(row["Invitaciones niños"] || 0);
     const invitationType = maxAdults === 1 && maxChildren === 0
@@ -127,7 +135,45 @@ const existingCodeById = new Map(existingLinks.map((item) => [item.id, item.code
 guests.forEach(validateGuest);
 
 if (process.argv.includes("--check-only")) {
-  console.log(`La lista está lista: ${guests.length} invitaciones.`);
+  const problems = [];
+  if (guests.length !== invitationSeeds.length) {
+    problems.push(`la hoja tiene ${guests.length} invitaciones y el sitio tiene ${invitationSeeds.length}`);
+  }
+
+  guests.forEach((guest, index) => {
+    const seed = invitationSeeds[index];
+    const row = guestRows[index];
+    const link = String(row["Enlace de invitación"] || "").trim();
+    const expectedPrefix = `${productionSiteUrl}/invite/`;
+    const rawCode = link.startsWith(expectedPrefix) ? link.slice(expectedPrefix.length) : "";
+    const declaredType = String(row["Tipo de invitación"] || "").trim().toLocaleLowerCase("es");
+    const expectedLabel = guest.invitationType === "personal"
+      ? "individual"
+      : guest.invitationType === "couple"
+        ? "pareja"
+        : "familia";
+
+    if (!seed) {
+      problems.push(`${guest.displayName}: falta en los datos publicados`);
+      return;
+    }
+
+    const [id, externalId, hash, displayName, invitationType, maxAdults, maxChildren] = seed;
+    if (id !== guest.id || externalId !== guest.id) problems.push(`${guest.displayName}: identificador desactualizado`);
+    if (displayName !== guest.displayName) problems.push(`${guest.displayName}: nombre desactualizado`);
+    if (invitationType !== guest.invitationType) problems.push(`${guest.displayName}: tipo desactualizado`);
+    if (maxAdults !== guest.maxAdults || maxChildren !== guest.maxChildren) problems.push(`${guest.displayName}: cupos desactualizados`);
+    if (declaredType !== expectedLabel) problems.push(`${guest.displayName}: la etiqueta de tipo no coincide`);
+    if (!/^[A-Za-z0-9_-]{8,64}$/.test(rawCode) || hash !== codeHash(rawCode)) {
+      problems.push(`${guest.displayName}: enlace desactualizado o inválido`);
+    }
+  });
+
+  if (problems.length) {
+    throw new Error(`La hoja y el sitio no coinciden:\n- ${problems.join("\n- ")}`);
+  }
+
+  console.log(`La hoja y el sitio coinciden: ${guests.length} invitaciones.`);
   process.exit(0);
 }
 

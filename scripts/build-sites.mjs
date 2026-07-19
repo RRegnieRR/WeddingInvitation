@@ -1,5 +1,7 @@
 import { copyFile, cp, mkdir, rm } from "node:fs/promises";
 
+const publishableAsset = (source) => !source.split("/").pop().startsWith(".");
+
 await rm("dist", { recursive: true, force: true });
 await mkdir("dist/client/scripts", { recursive: true });
 await mkdir("dist/client/styles", { recursive: true });
@@ -11,7 +13,7 @@ await copyFile("scripts/main.js", "dist/client/scripts/main.js");
 await copyFile("styles/main.css", "dist/client/styles/main.css");
 await copyFile("Joy in the Little Things.mp3", "dist/client/Joy in the Little Things.mp3");
 await copyFile("mystery of love.mp3", "dist/client/mystery of love.mp3");
-await cp("assets", "dist/client/assets", { recursive: true });
+await cp("assets", "dist/client/assets", { recursive: true, filter: publishableAsset });
 await copyFile("worker/index.js", "dist/server/index.js");
 await copyFile("worker/invitations.generated.js", "dist/server/invitations.generated.js");
 await copyFile(".openai/hosting.json", "dist/.openai/hosting.json");
