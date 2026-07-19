@@ -260,6 +260,40 @@
     }
   }
 
+  function setupHeroIntro() {
+    if (!hero) {
+      return;
+    }
+
+    var introStarted = false;
+    var fallbackTimer;
+
+    function startIntro() {
+      if (introStarted) {
+        return;
+      }
+
+      introStarted = true;
+      window.clearTimeout(fallbackTimer);
+      window.requestAnimationFrame(function () {
+        window.requestAnimationFrame(function () {
+          hero.classList.add("is-intro-ready");
+        });
+      });
+    }
+
+    fallbackTimer = window.setTimeout(startIntro, 1200);
+
+    if (document.fonts && typeof document.fonts.load === "function") {
+      Promise.all([
+        document.fonts.load('700 80px "Corinthia"'),
+        document.fonts.load('600 13px "Manrope"'),
+      ]).then(startIntro, startIntro);
+    } else {
+      startIntro();
+    }
+  }
+
   function setupHeroVideo() {
     if (!heroVideo || !hero) {
       return;
@@ -1195,6 +1229,7 @@
   updateScrollProgress();
   setupReveal();
   setupGallery();
+  setupHeroIntro();
   setupHeroVideo();
   setupPersonalRsvp();
   selectRandomAudioTrack();
