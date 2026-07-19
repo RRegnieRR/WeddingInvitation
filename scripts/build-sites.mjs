@@ -10,6 +10,7 @@ await copyFile("index.html", "dist/client/index.html");
 await copyFile("scripts/main.js", "dist/client/scripts/main.js");
 await copyFile("styles/main.css", "dist/client/styles/main.css");
 await copyFile("Joy in the Little Things.mp3", "dist/client/Joy in the Little Things.mp3");
+await copyFile("mystery of love.mp3", "dist/client/mystery of love.mp3");
 await cp("assets", "dist/client/assets", { recursive: true });
 await copyFile("worker/index.js", "dist/server/index.js");
 await copyFile("worker/invitations.generated.js", "dist/server/invitations.generated.js");

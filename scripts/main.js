@@ -80,6 +80,28 @@
     }
   }
 
+  function selectRandomAudioTrack() {
+    if (!audio) {
+      return;
+    }
+
+    var tracks = String(audio.getAttribute("data-tracks") || "")
+      .split("|")
+      .map(function (track) {
+        return track.trim();
+      })
+      .filter(Boolean);
+
+    if (!tracks.length) {
+      return;
+    }
+
+    var selectedTrack = tracks[Math.floor(Math.random() * tracks.length)];
+    audio.src = selectedTrack;
+    audio.dataset.selectedTrack = selectedTrack;
+    audio.load();
+  }
+
   function setAudioState(isEnabled) {
     if (!audio) {
       return;
@@ -1138,5 +1160,6 @@
   setupGallery();
   setupHeroVideo();
   setupPersonalRsvp();
+  selectRandomAudioTrack();
   setAudioState(true);
 })();
