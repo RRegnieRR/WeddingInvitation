@@ -94,8 +94,11 @@ const brideLookup = await jsonResponse(new Request(
 ));
 assert.equal(brideLookup.response.status, 200);
 assert.equal(brideLookup.body.invitation.displayName, "Magdalena & Daniel");
+assert.equal(brideLookup.body.invitation.invitationType, "couple");
+assert.deepEqual(brideLookup.body.invitation.guestNames, ["Magdalena", "Daniel"]);
 assert.equal(brideLookup.body.invitation.guestGroup, "bride_family");
 assert.equal(brideLookup.body.invitation.giftPreference, null);
+assert.equal(env.DB.invitations.get("magdalena-daniel").invitation_type, "family");
 
 const savePreference = await jsonResponse(new Request(
   "https://wedding.test/api/gift-preference",

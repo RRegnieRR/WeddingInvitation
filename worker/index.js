@@ -22,6 +22,15 @@ function normalizeCode(value) {
   return String(value || "").trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
 }
 
+function seedForDatabase(seed) {
+  // The existing production database was created before `couple` was added to
+  // its CHECK constraint. Store these rows as family records there; the public
+  // invitation kind is still derived as `couple` from the two fixed names.
+  return seed[4] === "couple"
+    ? [...seed.slice(0, 4), "family", ...seed.slice(5)]
+    : seed;
+}
+
 async function hashCode(code) {
   const bytes = new TextEncoder().encode(code);
   const digest = await crypto.subtle.digest("SHA-256", bytes);
@@ -38,7 +47,7 @@ async function ensureDatabase(db) {
 
   await db.batch(invitationSeeds.map((seed) => db.prepare(
     "INSERT INTO invitations (id, external_id, code_hash, display_name, invitation_type, max_adults, max_children) VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT(external_id) DO UPDATE SET display_name=excluded.display_name, invitation_type=excluded.invitation_type, max_adults=excluded.max_adults, max_children=excluded.max_children",
-  ).bind(...seed)));
+  ).bind(...seedForDatabase(seed))));
 }
 
 function isBrideFamily(invitation) {
