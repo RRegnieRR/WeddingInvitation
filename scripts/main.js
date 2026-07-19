@@ -28,6 +28,7 @@
       : "/api/rsvp");
   var browserIdStorageKey = "wedding_rsvp_browser_id";
   var submissionStorageKey = "wedding_rsvp_submission";
+  var audioTrackStorageKey = "wedding_audio_last_track";
 
   function pad(value) {
     return String(value).padStart(2, "0");
@@ -47,7 +48,7 @@
 
   function updateAudioVisibility() {
     var threshold = Math.max(window.innerHeight * 0.45, 60);
-    if (window.scrollY > threshold) {
+    if ((audio && audio.paused) || window.scrollY > threshold) {
       audioToggle.classList.add("is-visible");
     } else {
       audioToggle.classList.remove("is-visible");
@@ -95,6 +96,7 @@
       "aria-label",
       isPlaying ? "Pausar música" : "Reproducir música",
     );
+    updateAudioVisibility();
   }
 
   function selectRandomAudioTrack() {
@@ -113,9 +115,23 @@
       return;
     }
 
-    var selectedTrack = tracks[Math.floor(Math.random() * tracks.length)];
+    var lastTrack = getStorageItem(audioTrackStorageKey);
+    var availableTracks = tracks.filter(function (track) {
+      return track !== lastTrack;
+    });
+    var selectionPool = availableTracks.length ? availableTracks : tracks;
+    var randomValue = Math.random();
+
+    if (window.crypto && typeof window.crypto.getRandomValues === "function") {
+      var randomBytes = new Uint32Array(1);
+      window.crypto.getRandomValues(randomBytes);
+      randomValue = randomBytes[0] / 4294967296;
+    }
+
+    var selectedTrack = selectionPool[Math.floor(randomValue * selectionPool.length)];
     audio.src = selectedTrack;
     audio.dataset.selectedTrack = selectedTrack;
+    setStorageItem(audioTrackStorageKey, selectedTrack);
     audio.load();
   }
 
@@ -245,12 +261,6 @@
     hero.dataset.videoFrozen = "true";
     hero.classList.add("is-video-ended");
     heroVideo.pause();
-
-    if (Number.isFinite(heroVideo.duration) && heroVideo.duration > 0) {
-      try {
-        heroVideo.currentTime = Math.max(heroVideo.duration - 0.2, 0);
-      } catch (error) {}
-    }
   }
 
   function setupHeroVideo() {
@@ -315,7 +325,6 @@
 
     heroVideo.addEventListener("ended", freezeHeroVideo);
     heroVideo.addEventListener("error", fallbackHeroVideo, { once: true });
-    heroVideo.addEventListener("stalled", fallbackHeroVideo, { once: true });
     heroVideo.loop = false;
     syncHeroMediaMode();
 
@@ -1150,6 +1159,7 @@
   ["play", "playing", "pause", "ended", "error"].forEach(function (eventName) {
     audio.addEventListener(eventName, syncAudioToggle);
   });
+  audio.addEventListener("canplay", attemptPlay, { once: true });
 
   window.addEventListener(
     "pointerdown",

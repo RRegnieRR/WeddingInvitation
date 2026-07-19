@@ -91,6 +91,7 @@ button {
 }
 
 .hero__video,
+.hero__video-end,
 .hero__media,
 .hero__media img {
   position: absolute;
@@ -100,19 +101,38 @@ button {
   background: rgb(254, 254, 254);
 }
 
-.hero__video {
+.hero__video,
+.hero__video-end {
   z-index: 1;
   object-fit: cover;
   object-position: center 76%;
   transform: scale(1.08);
   transform-origin: center top;
+}
+
+.hero__video {
   opacity: 1;
   transition:
     opacity 900ms ease,
     transform 900ms ease;
 }
 
-.hero.is-video-fallback .hero__video {
+.hero__video-end {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease;
+}
+
+.hero.is-video-ended .hero__video {
+  opacity: 0;
+}
+
+.hero.is-video-ended .hero__video-end {
+  opacity: 1;
+}
+
+.hero.is-video-fallback .hero__video,
+.hero.is-video-fallback .hero__video-end {
   opacity: 0;
   pointer-events: none;
 }
@@ -1784,7 +1804,8 @@ main {
 }
 
 @media (min-width: 768px) {
-  .hero__video {
+  .hero__video,
+  .hero__video-end {
     display: none;
   }
 
