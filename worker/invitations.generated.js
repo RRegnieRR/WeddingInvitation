@@ -24,4 +24,5 @@ export const invitationSeeds = [
   ["familia-gomez", "familia-gomez", "1904cb6ab76d2e3f3b7b4d6300483b298a0058fd0ffe07fb3cd64ee7ce87d65a", "Familia Gomez", "family", 4, 0],
   ["familia-pech", "familia-pech", "49a53ec70157b442804621c0238f12adb9f31d00d298a29c4ab889e303554d2a", "Familia Pech", "family", 4, 2],
   ["familia-palacios-mercado", "familia-palacios-mercado", "240877c68995e0350ce7c9df9496cb3e139351881032b5792699cae315148fd1", "Familia Palacios Mercado", "family", 4, 2],
+  ["magdalena-daniel", "magdalena-daniel", "9b58c5ba79cc9b88f6925ea4907194c96a2c6c88b8467ee0ff4e349fe9e27b18", "Magdalena & Daniel", "family", 2, 0],
 ];
