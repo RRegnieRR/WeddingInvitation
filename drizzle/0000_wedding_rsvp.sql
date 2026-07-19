@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS invitations (
   external_id TEXT NOT NULL UNIQUE,
   code_hash TEXT NOT NULL UNIQUE,
   display_name TEXT NOT NULL,
-  invitation_type TEXT NOT NULL DEFAULT 'family' CHECK (invitation_type IN ('family', 'personal')),
+  invitation_type TEXT NOT NULL DEFAULT 'family' CHECK (invitation_type IN ('family', 'personal', 'couple')),
   max_adults INTEGER NOT NULL DEFAULT 1 CHECK (max_adults BETWEEN 0 AND 20),
   max_children INTEGER NOT NULL DEFAULT 0 CHECK (max_children BETWEEN 0 AND 20)
 );

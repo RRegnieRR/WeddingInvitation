@@ -1,7 +1,4 @@
-const seeds = [
-  ["familia-palacios-garcia", "familia-palacios-garcia", "882c6aaa092092e51d0a7389472b443287cd7f09fa1542c8c6a21f2b3cfcf5d3", "Familia Palacios García", "family", 4, 2],
-  ["mckay-stacey", "mckay-stacey", "ac17b6166dfa8299317442458322c2b11deb21487528112fe4706c82761b2ba2", "McKay Stacey", "personal", 1, 0],
-];
+import { invitationSeeds } from "./invitations.generated.js";
 
 function json(body, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -31,7 +28,7 @@ async function ensureDatabase(db) {
     db.prepare("CREATE INDEX IF NOT EXISTS invitations_code_hash_idx ON invitations (code_hash)"),
   ]);
 
-  await db.batch(seeds.map((seed) => db.prepare(
+  await db.batch(invitationSeeds.map((seed) => db.prepare(
     "INSERT INTO invitations (id, external_id, code_hash, display_name, invitation_type, max_adults, max_children) VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT(external_id) DO UPDATE SET display_name=excluded.display_name, invitation_type=excluded.invitation_type, max_adults=excluded.max_adults, max_children=excluded.max_children",
   ).bind(...seed)));
 }
@@ -42,6 +39,7 @@ function publicInvitation(invitation, rsvp) {
   return {
     displayName: invitation.display_name,
     invitationType: invitation.invitation_type || "family",
+    guestNames: invitedNames(invitation),
     maxAdults: invitation.max_adults,
     maxChildren: invitation.max_children,
     rsvp: rsvp ? {
@@ -53,6 +51,13 @@ function publicInvitation(invitation, rsvp) {
   };
 }
 
+function invitedNames(invitation) {
+  if (invitation.invitation_type === "personal") return [invitation.display_name];
+  if (invitation.invitation_type !== "couple") return [];
+  const names = String(invitation.display_name || "").split(/\s*(?:&|\by\b)\s*/i).map((name) => name.trim()).filter(Boolean);
+  return names.length === 2 ? names : [];
+}
+
 function validateGuests(payload, invitation, attendance) {
   if (!Array.isArray(payload.guests)) return { error: "Agrega los nombres de las personas que asistirán." };
   let guests = payload.guests.map((guest, index) => ({
@@ -62,6 +67,11 @@ function validateGuests(payload, invitation, attendance) {
   }));
   if (invitation.invitation_type === "personal" && attendance === "yes") {
     guests = [{ slot: 0, type: "adult", name: cleanText(invitation.display_name, 100) }, ...guests.filter((guest) => guest.type === "child")];
+  }
+  if (invitation.invitation_type === "couple" && attendance === "yes") {
+    const names = invitedNames(invitation);
+    const selectedSlots = [...new Set(guests.filter((guest) => guest.type === "adult").map((guest) => guest.slot))];
+    guests = selectedSlots.filter((slot) => slot >= 0 && slot < names.length).map((slot) => ({ slot, type: "adult", name: names[slot] }));
   }
   if (attendance === "yes" && guests.length === 0) return { error: "Selecciona al menos una persona que asistirá." };
   if (attendance === "no" && guests.length > 0) return { error: "Una confirmación de no asistencia no puede incluir asistentes." };

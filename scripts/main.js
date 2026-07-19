@@ -622,12 +622,27 @@
         return {
           slot: slot,
           type: type,
+          invitedName: invitation.guestNames && invitation.guestNames[slot]
+            ? invitation.guestNames[slot]
+            : "",
           name: savedGuest ? savedGuest.name : "",
+          selected: Boolean(savedGuest),
         };
       });
     }
 
     function nameField(slot, index, label) {
+      if (slot.invitedName) {
+        return [
+          '<label class="choice rsvp-fixed-guest rsvp-name-slot' + (slot.selected ? " choice--active" : "") +
+            '" data-slot="' + slot.slot + '" data-type="' + slot.type +
+            '" data-fixed-name="' + escapeHtml(slot.invitedName) + '">',
+          '<input type="checkbox" name="guestSelected"' + (slot.selected ? " checked" : "") + " />",
+          "<span>" + escapeHtml(slot.invitedName) + "</span>",
+          "</label>",
+        ].join("");
+      }
+
       return [
         '<label class="field rsvp-name-slot" data-slot="' + slot.slot + '" data-type="' + slot.type + '">',
         '<span class="field__label">' + label + " " + (index + 1) + "</span>",
@@ -639,6 +654,7 @@
 
     function renderInvitation(code, invitation) {
       var isPersonal = invitation.invitationType === "personal";
+      var isCouple = invitation.invitationType === "couple";
       var adultSlots = isPersonal ? [] : buildNameSlots(invitation, "adult", invitation.maxAdults);
       var childSlots = buildNameSlots(invitation, "child", invitation.maxChildren);
       var attendance = invitation.rsvp ? invitation.rsvp.attendance : "yes";
@@ -655,6 +671,7 @@
         '<div class="rsvp-invitation-summary">',
         '<p class="field__label">Invitación para</p>',
         '<h3 class="card__title">' + escapeHtml(invitation.displayName) + "</h3>",
+        isCouple ? '<p class="rsvp-invitation-kind">Invitación de pareja</p>' : "",
         (!isPersonal || invitation.maxChildren) ? '<div class="rsvp-allocation">' : "",
         !isPersonal
           ? '<span><strong>' + invitation.maxAdults + "</strong> " +
@@ -682,12 +699,14 @@
         "</div>",
         '<div class="rsvp-attendance-fields"' + attendanceHidden + ">",
         !isPersonal
-          ? '<p class="rsvp-name-help">Escriban solamente los nombres de quienes asistirán.</p>'
+          ? '<p class="rsvp-name-help">' + (isCouple
+              ? "Seleccionen quiénes asistirán. Sus nombres ya están incluidos en la invitación."
+              : "Escriban solamente los nombres de quienes asistirán.") + "</p>"
           : "",
         !isPersonal ? '<div class="rsvp-guest-group">' : "",
         !isPersonal ? [
         '<div class="rsvp-seat-heading">',
-        '<span class="field__label">Adultos</span>',
+        '<span class="field__label">' + (isCouple ? "Personas invitadas" : "Adultos") + "</span>",
         '<span class="rsvp-adult-count"></span>',
         "</div>",
         '<div class="rsvp-name-list">' +
@@ -734,15 +753,26 @@
       var nameSlots = Array.from(personalForm.querySelectorAll(".rsvp-name-slot"));
       var personalSubmitButton = personalForm.querySelector("button[type='submit']");
 
+      function slotIsSelected(slot) {
+        var checkbox = slot.querySelector("input[type='checkbox']");
+        return checkbox ? checkbox.checked : Boolean(slot.querySelector("input").value.trim());
+      }
+
       function updateSeatCount() {
         var adultCount = nameSlots.filter(function (slot) {
           return slot.getAttribute("data-type") === "adult" &&
-            slot.querySelector("input").value.trim();
+            slotIsSelected(slot);
         }).length;
         var childCount = nameSlots.filter(function (slot) {
           return slot.getAttribute("data-type") === "child" &&
-            slot.querySelector("input").value.trim();
+            slotIsSelected(slot);
         }).length;
+
+        nameSlots.forEach(function (slot) {
+          if (slot.matches(".rsvp-fixed-guest")) {
+            slot.classList.toggle("choice--active", slotIsSelected(slot));
+          }
+        });
 
         if (adultCountNode) adultCountNode.textContent = adultCount + " de " + invitation.maxAdults;
         if (childCountNode) childCountNode.textContent = childCount + " de " + invitation.maxChildren;
@@ -759,7 +789,8 @@
       });
 
       nameSlots.forEach(function (slot) {
-        slot.querySelector("input").addEventListener("input", updateSeatCount);
+        var input = slot.querySelector("input");
+        input.addEventListener(input.type === "checkbox" ? "change" : "input", updateSeatCount);
       });
 
       personalForm.addEventListener("submit", async function (event) {
@@ -773,7 +804,9 @@
             guests.push({ slot: 0, type: "adult", name: invitation.displayName });
           }
           nameSlots.forEach(function (slot) {
-            var name = slot.querySelector("input[name='guestName']").value.trim();
+            if (!slotIsSelected(slot)) return;
+            var nameInput = slot.querySelector("input[name='guestName']");
+            var name = slot.getAttribute("data-fixed-name") || (nameInput ? nameInput.value.trim() : "");
             if (!name) return;
 
             guests.push({

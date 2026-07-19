@@ -127,4 +127,34 @@ assert.deepEqual(savedPayload.guests, [
   { type: "adult", slot: 0, name: "McKay Stacey" },
 ]);
 
+invitation.display_name = "Arturo & Aris";
+invitation.invitation_type = "couple";
+invitation.max_adults = 2;
+
+const coupleLookupResponse = createResponse();
+await handler(
+  { method: "GET", query: { code: "COUPLE123" }, headers: {} },
+  coupleLookupResponse,
+);
+assert.deepEqual(coupleLookupResponse.body.invitation.guestNames, ["Arturo", "Aris"]);
+
+const coupleResponse = createResponse();
+await handler(
+  {
+    method: "POST",
+    headers: {},
+    body: {
+      code: "COUPLE123",
+      attendance: "yes",
+      guests: [{ type: "adult", slot: 1, name: "Nombre alterado" }],
+      message: "Aris asistirá",
+    },
+  },
+  coupleResponse,
+);
+assert.equal(coupleResponse.statusCode, 200);
+assert.deepEqual(savedPayload.guests, [
+  { type: "adult", slot: 1, name: "Aris" },
+]);
+
 console.log("RSVP API checks passed.");

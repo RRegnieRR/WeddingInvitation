@@ -5,7 +5,7 @@ create table if not exists public.invitations (
   external_id text not null unique,
   code_hash text not null unique,
   display_name text not null,
-  invitation_type text not null default 'family' check (invitation_type in ('family', 'personal')),
+  invitation_type text not null default 'family' check (invitation_type in ('family', 'personal', 'couple')),
   max_adults integer not null default 1 check (max_adults between 0 and 20),
   max_children integer not null default 0 check (max_children between 0 and 20),
   created_at timestamptz not null default now()

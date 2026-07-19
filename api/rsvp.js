@@ -101,6 +101,7 @@ function publicInvitation(invitation, rsvp) {
   return {
     displayName: invitation.display_name,
     invitationType: invitation.invitation_type || "family",
+    guestNames: invitedNames(invitation),
     maxAdults: invitation.max_adults,
     maxChildren: invitation.max_children,
     rsvp: rsvp
@@ -113,6 +114,13 @@ function publicInvitation(invitation, rsvp) {
         }
       : null,
   };
+}
+
+function invitedNames(invitation) {
+  if (invitation.invitation_type === "personal") return [invitation.display_name];
+  if (invitation.invitation_type !== "couple") return [];
+  const names = String(invitation.display_name || "").split(/\s*(?:&|\by\b)\s*/i).map((name) => name.trim()).filter(Boolean);
+  return names.length === 2 ? names : [];
 }
 
 function validateGuests(payload, invitation, attendance) {
@@ -136,6 +144,16 @@ function validateGuests(payload, invitation, attendance) {
       { slot: 0, type: "adult", name: cleanText(invitation.display_name, 100) },
       ...guests.filter((guest) => guest.type === "child"),
     ];
+  }
+
+  if (invitation.invitation_type === "couple" && attendance === "yes") {
+    const names = invitedNames(invitation);
+    const selectedSlots = [...new Set(
+      guests.filter((guest) => guest.type === "adult").map((guest) => guest.slot),
+    )];
+    guests = selectedSlots
+      .filter((slot) => slot >= 0 && slot < names.length)
+      .map((slot) => ({ slot, type: "adult", name: names[slot] }));
   }
 
   if (attendance === "yes" && guests.length === 0) {

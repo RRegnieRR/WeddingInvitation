@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && node scripts/build-sites.mjs",
+    "build": "node scripts/build-sites.mjs",
     "preview": "vite preview",
     "guests:import": "node scripts/import-guests.mjs",
     "guests:check": "node scripts/import-guests.mjs --check-only",

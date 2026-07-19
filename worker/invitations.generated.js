@@ -1,0 +1,27 @@
+// Generated from outputs/wedding-rsvp/lista-de-invitados.xlsx.
+// Keep raw invitation codes only in the guest workbook; the site stores hashes.
+export const invitationSeeds = [
+  ["familia-palacios-garcia", "familia-palacios-garcia", "882c6aaa092092e51d0a7389472b443287cd7f09fa1542c8c6a21f2b3cfcf5d3", "Familia Palacios García", "family", 4, 2],
+  ["mckay-stacey", "mckay-stacey", "ac17b6166dfa8299317442458322c2b11deb21487528112fe4706c82761b2ba2", "McKay Stacey", "personal", 1, 0],
+  ["barclay", "barclay", "b73bf505603fe728401ca937c63491fb603973c9f6636cbee9bf6df7b9fa6013", "Barclay", "personal", 1, 0],
+  ["ramos", "ramos", "b06464cd3c0035ea6ee5108e9516d032586f0b0be3289267446be4122f0fca8e", "Ramos", "personal", 1, 0],
+  ["gonzalez", "gonzalez", "fb5c014070d496fe18c7f10751884cd31d78cb4e302a6fd8c1630316384cac61", "Gonzalez", "personal", 1, 0],
+  ["kaufman", "kaufman", "91edf756f45b0c24e86c436ac67749402f4c56b8b7d54ad416cf56ca482135ae", "Kaufman", "personal", 1, 0],
+  ["ramirez", "ramirez", "768c32c7a178faf23bbe1299f203d51d73000ffc77da9f11c27f6cb6e2b65914", "Ramirez", "personal", 1, 0],
+  ["arturo-aris", "arturo-aris", "4bbfcccf02a1d331a0bb0e9b4fc3068bce97bffe6936f16624bc2a2b9c9a2256", "Arturo & Aris", "couple", 2, 0],
+  ["gil", "gil", "f69aec56692c50fc948d13a954b88992d3484538bcbdac9ab52d193331696830", "Gil", "personal", 1, 0],
+  ["miguel", "miguel", "c9ac88f0ce2717da6f1d68748261546fb44c51007b074f6562fe140c8a359d05", "Miguel", "personal", 1, 0],
+  ["yael", "yael", "26e45882fc982408c18a8f67a87da01c2c8f47e7fa453da1927ada1ab5798372", "Yael", "personal", 1, 0],
+  ["paulo-megan", "paulo-megan", "d2f0f34af5fd9c31b3f8c4f4396c6648cc120fa9c1253f0f9c16e0b8986f620d", "Paulo & Megan", "couple", 2, 0],
+  ["familia-flores", "familia-flores", "6f4265db34633dfed1cc5825c299c6b7c5d94ce8d1cc6ce4aa85b3bf54702867", "Familia Flores", "family", 3, 0],
+  ["familia-regnier-cruz", "familia-regnier-cruz", "f401d17f60903a821bd309f9936d21bdbc612209b9a6af9012c86f1c8b6c4bf1", "Familia Regnier Cruz", "family", 2, 2],
+  ["familia-watkins", "familia-watkins", "723a2aa0440791a5fc2e3d7b605cfcfb0511bce6222f148b0e3581821ab3f863", "Familia Watkins", "family", 2, 2],
+  ["eduardo", "eduardo", "391b49d8e66b0f24c16da731ff15577ad1b63018daebede9b0d2f1e66a10cb56", "Eduardo", "personal", 1, 0],
+  ["beatriz", "beatriz", "ff10b538962df8db347c8d13ff1c6a3c87f2d964cc26f075ffeab7fb8db99282", "Beatriz", "personal", 1, 0],
+  ["familia-gonzalez-palacios", "familia-gonzalez-palacios", "a2341a7ddabd90a7cbee3b6cce51b02507c74acf569e21b56546365618e48033", "Familia Gonzalez Palacios", "family", 5, 2],
+  ["mi-abuelita-hermosa", "mi-abuelita-hermosa", "4723e58771cb214f9ab5a66ddbae55a18b8fe7449120763a9ee6018bf020b371", "Mi Abuelita Hermosa", "personal", 1, 0],
+  ["familia-abrego-hernandez", "familia-abrego-hernandez", "c22dcbd7b62e0ae54244ba3071b37fa250f302c09348f5824a0bc0800f36d95d", "Familia Abrego Hernandez", "family", 5, 4],
+  ["familia-gomez", "familia-gomez", "1904cb6ab76d2e3f3b7b4d6300483b298a0058fd0ffe07fb3cd64ee7ce87d65a", "Familia Gomez", "family", 4, 0],
+  ["familia-pech", "familia-pech", "49a53ec70157b442804621c0238f12adb9f31d00d298a29c4ab889e303554d2a", "Familia Pech", "family", 4, 2],
+  ["familia-palacios-mercado", "familia-palacios-mercado", "240877c68995e0350ce7c9df9496cb3e139351881032b5792699cae315148fd1", "Familia Palacios Mercado", "family", 4, 2],
+];

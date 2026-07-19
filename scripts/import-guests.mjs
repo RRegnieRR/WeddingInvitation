@@ -53,6 +53,13 @@ function validateGuest(entry, index) {
   if (entry.invitationType === "personal" && entry.maxAdults !== 1) {
     throw new Error(`${entry.displayName}: una invitación personal debe tener exactamente 1 adulto.`);
   }
+
+  if (entry.invitationType === "couple") {
+    const names = entry.displayName.split(/\s*(?:&|\by\b)\s*/i).map((name) => name.trim()).filter(Boolean);
+    if (entry.maxAdults !== 2 || entry.maxChildren !== 0 || names.length !== 2) {
+      throw new Error(`${entry.displayName}: una pareja debe tener 2 adultos, 0 niños y dos nombres separados con &.`);
+    }
+  }
 }
 
 function slugify(value) {
@@ -79,14 +86,21 @@ const spreadsheetRows = XLSX.utils.sheet_to_json(worksheet, {
   range: 3,
 });
 const guests = spreadsheetRows
-  .map((row) => ({
-    displayName: String(row["Nombre en la invitación"] || "").trim(),
-    maxAdults: Number(row["Invitaciones adultos"]),
-    maxChildren: Number(row["Invitaciones niños"]),
-    invitationType: String(row["Tipo de invitación"] || "Familia").trim().toLowerCase() === "personal"
+  .map((row) => {
+    const maxAdults = Number(row["Invitaciones adultos"] || 0);
+    const maxChildren = Number(row["Invitaciones niños"] || 0);
+    const invitationType = maxAdults === 1 && maxChildren === 0
       ? "personal"
-      : "family",
-  }))
+      : maxAdults === 2 && maxChildren === 0
+        ? "couple"
+        : "family";
+    return {
+      displayName: String(row["Nombre en la invitación"] || "").trim(),
+      maxAdults,
+      maxChildren,
+      invitationType,
+    };
+  })
   .filter((entry) => entry.displayName);
 const ids = guests.map((guest) => slugify(guest.displayName));
 
@@ -121,6 +135,11 @@ const links = guests.map((guest) => {
     maxAdults: guest.maxAdults,
     maxChildren: guest.maxChildren,
     invitationType: guest.invitationType,
+    guestNames: guest.invitationType === "personal"
+      ? [guest.displayName]
+      : guest.invitationType === "couple"
+        ? guest.displayName.split(/\s*(?:&|\by\b)\s*/i).map((name) => name.trim())
+        : [],
     code,
     url: `${siteUrl}/invite/${code}`,
   };
@@ -155,7 +174,15 @@ const linkColumn = "Enlace de invitación";
 spreadsheetRows.forEach((row) => {
   const id = slugify(row["Nombre en la invitación"]);
   const link = links.find((item) => item.id === id);
-  if (link) row[linkColumn] = link.url;
+  if (link) {
+    row["Invitaciones niños"] = link.maxChildren;
+    row["Tipo de invitación"] = link.invitationType === "personal"
+      ? "Individual"
+      : link.invitationType === "couple"
+        ? "Pareja"
+        : "Familia";
+    row[linkColumn] = link.url;
+  }
 });
 const updatedWorksheet = XLSX.utils.json_to_sheet(spreadsheetRows, {
   header: [
@@ -169,7 +196,7 @@ const updatedWorksheet = XLSX.utils.json_to_sheet(spreadsheetRows, {
 });
 XLSX.utils.sheet_add_aoa(updatedWorksheet, [
   ["Lista de invitaciones"],
-  ["Cada enlace es único. Envía solamente el enlace de la familia o persona correspondiente."],
+  ["Cada enlace es único. Envía solamente el enlace de la familia, pareja o persona correspondiente."],
 ], { origin: "A1" });
 workbook.Sheets[workbook.SheetNames[0]] = updatedWorksheet;
 XLSX.writeFile(workbook, guestListPath);
@@ -186,4 +213,4 @@ writeFileSync(
 );
 
 console.log(`Se crearon ${links.length} invitaciones.`);
-console.log(`Enlaces personales: ${csvPath}`);
+console.log(`Enlaces de invitación: ${csvPath}`);

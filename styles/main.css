@@ -1323,6 +1323,20 @@ main {
   background: rgba(254, 254, 254, 0.58);
 }
 
+.rsvp-invitation-kind {
+  margin: 0.35rem 0 0;
+  color: #667331;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.rsvp-fixed-guest {
+  min-height: 3.35rem;
+  justify-content: flex-start;
+}
+
 .rsvp-name-list {
   display: grid;
   gap: 0.9rem;
