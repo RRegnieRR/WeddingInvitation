@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "guests:import": "node scripts/import-guests.mjs",
     "guests:check": "node scripts/import-guests.mjs --check-only",
-    "test:rsvp": "node scripts/test-rsvp.mjs"
+    "test:rsvp": "node scripts/test-rsvp.mjs",
+    "test:worker": "node scripts/test-worker.mjs"
   },
   "dependencies": {
     "framer-motion": "^12.10.5",

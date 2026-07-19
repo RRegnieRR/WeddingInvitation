@@ -575,6 +575,108 @@
       node.textContent = message || "";
     }
 
+    function showDefaultGiftExperience() {
+      var defaultContent = document.getElementById("gift-default-content");
+      var brideContent = document.getElementById("gift-bride-family-content");
+
+      if (defaultContent) defaultContent.hidden = false;
+      if (brideContent) brideContent.hidden = true;
+    }
+
+    function renderGiftExperience(code, invitation) {
+      var defaultContent = document.getElementById("gift-default-content");
+      var brideContent = document.getElementById("gift-bride-family-content");
+      var giftForm = document.getElementById("gift-preference-form");
+      var isBrideFamily = invitation.guestGroup === "bride_family";
+
+      if (!defaultContent || !brideContent || !giftForm) return;
+
+      defaultContent.hidden = isBrideFamily;
+      brideContent.hidden = !isBrideFamily;
+      if (!isBrideFamily) return;
+
+      var savedPreference = invitation.giftPreference || null;
+      var preferenceInputs = Array.from(giftForm.querySelectorAll("input[name='giftPreference']"));
+      var moneyDetails = giftForm.querySelector(".gift-money-details");
+      var noteField = giftForm.querySelector(".gift-note-field");
+      var noteInput = giftForm.elements.giftNote;
+      var giftSubmitButton = giftForm.querySelector("button[type='submit']");
+      giftForm.dataset.inviteCode = code;
+
+      preferenceInputs.forEach(function (input) {
+        input.checked = Boolean(savedPreference && input.value === savedPreference.preference);
+      });
+      noteInput.value = savedPreference ? savedPreference.giftNote || "" : "";
+
+      function syncGiftChoice() {
+        var selected = giftForm.querySelector("input[name='giftPreference']:checked");
+        var value = selected ? selected.value : "";
+
+        giftForm.querySelectorAll(".gift-choice").forEach(function (choice) {
+          choice.classList.toggle("is-active", Boolean(choice.querySelector("input:checked")));
+        });
+        moneyDetails.hidden = value !== "money" && value !== "both";
+        noteField.hidden = value !== "gift" && value !== "both";
+      }
+
+      if (!giftForm.dataset.bound) {
+        giftForm.dataset.bound = "true";
+        preferenceInputs.forEach(function (input) {
+          input.addEventListener("change", syncGiftChoice);
+        });
+
+        giftForm.addEventListener("submit", async function (event) {
+          event.preventDefault();
+          var selected = giftForm.querySelector("input[name='giftPreference']:checked");
+
+          if (!selected) {
+            setFormStatus(giftForm, "error", "Seleccionen dinero, regalo o ambas opciones.");
+            return;
+          }
+
+          giftSubmitButton.disabled = true;
+          giftSubmitButton.textContent = "Guardando...";
+          setFormStatus(giftForm, "", "");
+
+          try {
+            var response = await fetch("/api/gift-preference", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                code: giftForm.dataset.inviteCode,
+                website: giftForm.elements.website.value,
+                preference: selected.value,
+                giftNote: selected.value === "gift" || selected.value === "both"
+                  ? noteInput.value.trim()
+                  : "",
+              }),
+            });
+            var result = await response.json().catch(function () {
+              return {};
+            });
+
+            if (!response.ok || !result.ok) {
+              throw new Error(result.message || "No pudimos guardar su elección.");
+            }
+
+            setFormStatus(
+              giftForm,
+              "success",
+              "Gracias. Su elección de regalo quedó guardada y pueden cambiarla cuando quieran.",
+            );
+          } catch (error) {
+            setFormStatus(giftForm, "error", error.message);
+          } finally {
+            giftSubmitButton.disabled = false;
+            giftSubmitButton.textContent = "Guardar elección";
+          }
+        });
+      }
+
+      setFormStatus(giftForm, "", "");
+      syncGiftChoice();
+    }
+
     function renderCodeForm(errorMessage) {
       rsvpApp.innerHTML = [
         '<form class="rsvp-form rsvp-code-form" id="invite-code-form">',
@@ -878,8 +980,10 @@
           );
         }
 
+        renderGiftExperience(code, lookupResult.invitation);
         renderInvitation(code, lookupResult.invitation);
       } catch (error) {
+        showDefaultGiftExperience();
         renderCodeForm(error.message || "No pudimos cargar esta invitación.");
       }
     }

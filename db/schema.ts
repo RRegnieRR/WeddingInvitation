@@ -19,3 +19,12 @@ export const rsvps = sqliteTable("rsvps", {
   message: text("message").notNull().default(""),
   updatedAt: text("updated_at").notNull(),
 });
+
+export const giftPreferences = sqliteTable("gift_preferences", {
+  invitationId: text("invitation_id")
+    .primaryKey()
+    .references(() => invitations.id, { onDelete: "cascade" }),
+  preference: text("preference", { enum: ["money", "gift", "both"] }).notNull(),
+  giftNote: text("gift_note").notNull().default(""),
+  updatedAt: text("updated_at").notNull(),
+});

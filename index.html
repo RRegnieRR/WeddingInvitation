@@ -14,8 +14,8 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <link rel="stylesheet" href="/styles/main.css?v=20260718-03" />
-    <script type="module" src="/scripts/main.js?v=20260718-03"></script>
+    <link rel="stylesheet" href="/styles/main.css?v=20260718-04" />
+    <script type="module" src="/scripts/main.js?v=20260718-04"></script>
   </head>
   <body>
     <div class="scroll-progress" aria-hidden="true"></div>
@@ -313,18 +313,77 @@
           <div class="section-mark section-mark--gift" aria-hidden="true">
             <span></span>
           </div>
-          <p class="section__eyebrow">Regalos</p>
-          <h2 class="section__title">Su presencia es nuestro mejor regalo</h2>
-          <p class="section__text">
-            Si desean tener un detalle con nosotros, aquí pueden encontrar
-            nuestros datos bancarios:
-          </p>
-          <div class="grid-two">
-            <article class="card card--padded gift-card">
-              <h3 class="card__title">Nu Bank – Alizee</h3>
-              <p>Clave: ES12 2100 0418 4502 0005 1332</p>
-              <p>SWIFT: CAIXESBBXXX</p>
-            </article>
+          <div id="gift-default-content">
+            <p class="section__eyebrow">Regalos</p>
+            <h2 class="section__title">Su presencia es nuestro mejor regalo</h2>
+            <p class="section__text">
+              Si desean tener un detalle con nosotros, aquí pueden encontrar
+              nuestros datos bancarios:
+            </p>
+            <div class="grid-two">
+              <article class="card card--padded gift-card">
+                <h3 class="card__title">Nu Bank – Alizee</h3>
+                <p>Clave: ES12 2100 0418 4502 0005 1332</p>
+                <p>SWIFT: CAIXESBBXXX</p>
+              </article>
+            </div>
+          </div>
+
+          <div id="gift-bride-family-content" hidden>
+            <p class="section__eyebrow">Regalos · Familia de la novia</p>
+            <h2 class="section__title">Elijan cómo desean acompañarnos</h2>
+            <p class="section__text">
+              Con muchísimo cariño, pueden elegir dinero, un regalo o ambas opciones.
+              Su elección quedará guardada en esta invitación y podrán cambiarla después.
+            </p>
+            <form class="gift-preference-form card card--padded" id="gift-preference-form">
+              <input class="rsvp-form__hidden" type="text" name="website" autocomplete="off" tabindex="-1" />
+              <fieldset class="gift-preference-fieldset">
+                <legend class="field__label">¿Qué les gustaría obsequiarnos?</legend>
+                <div class="gift-choice-grid">
+                  <label class="gift-choice">
+                    <input type="radio" name="giftPreference" value="money" />
+                    <span class="gift-choice__mark" aria-hidden="true">$</span>
+                    <strong>Dinero</strong>
+                    <small>Les mostraremos nuestros datos bancarios.</small>
+                  </label>
+                  <label class="gift-choice">
+                    <input type="radio" name="giftPreference" value="gift" />
+                    <span class="gift-choice__mark gift-choice__mark--gift" aria-hidden="true"></span>
+                    <strong>Regalo</strong>
+                    <small>Pueden contarnos qué regalo tienen en mente.</small>
+                  </label>
+                  <label class="gift-choice">
+                    <input type="radio" name="giftPreference" value="both" />
+                    <span class="gift-choice__mark" aria-hidden="true">+</span>
+                    <strong>Ambos</strong>
+                    <small>Dinero y un regalo para acompañarnos.</small>
+                  </label>
+                </div>
+              </fieldset>
+
+              <article class="gift-preference-details gift-money-details" hidden>
+                <p class="field__label">Datos bancarios</p>
+                <h3 class="card__title">Nu Bank – Alizee</h3>
+                <p>Clave: ES12 2100 0418 4502 0005 1332</p>
+                <p>SWIFT: CAIXESBBXXX</p>
+              </article>
+
+              <label class="field gift-note-field" hidden>
+                <span class="field__label">Regalo que tienen en mente <em>(opcional)</em></span>
+                <textarea
+                  class="field__input field__textarea gift-note-input"
+                  name="giftNote"
+                  maxlength="500"
+                  placeholder="Pueden dejarnos una pequeña nota sobre el regalo"
+                ></textarea>
+              </label>
+
+              <div class="rsvp-form__footer">
+                <button class="button button--solid" type="submit">Guardar elección</button>
+                <p class="rsvp-form__status" hidden aria-live="polite"></p>
+              </div>
+            </form>
           </div>
         </div>
       </section>

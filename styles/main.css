@@ -1034,6 +1034,147 @@ main {
   background: linear-gradient(135deg, rgba(255, 254, 250, 0.96), rgba(241, 232, 218, 0.7));
 }
 
+#gift-bride-family-content[hidden],
+#gift-default-content[hidden],
+.gift-preference-details[hidden],
+.gift-note-field[hidden] {
+  display: none;
+}
+
+.gift-preference-form {
+  display: grid;
+  gap: 1.35rem;
+  max-width: 58rem;
+  margin: 3rem auto 0;
+  background: linear-gradient(145deg, rgba(255, 254, 250, 0.98), rgba(239, 232, 214, 0.66));
+}
+
+.gift-preference-fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.gift-preference-fieldset legend {
+  margin-bottom: 0.9rem;
+}
+
+.gift-choice-grid {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.gift-choice {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 0.3rem 0.9rem;
+  min-height: 8.5rem;
+  padding: 1.15rem;
+  border: 1px solid rgba(138, 116, 96, 0.16);
+  border-radius: 1.45rem;
+  background: rgba(254, 254, 254, 0.72);
+  cursor: pointer;
+  transition: transform 180ms ease, border-color 180ms ease, background-color 180ms ease;
+}
+
+.gift-choice:hover,
+.gift-choice:focus-within {
+  transform: translateY(-2px);
+  border-color: rgba(113, 128, 58, 0.42);
+}
+
+.gift-choice.is-active {
+  border-color: rgba(113, 128, 58, 0.56);
+  background: rgba(239, 242, 222, 0.84);
+  box-shadow: 0 14px 34px rgba(89, 97, 47, 0.1);
+}
+
+.gift-choice input {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  margin: 0;
+  accent-color: #71803a;
+}
+
+.gift-choice__mark {
+  display: grid;
+  grid-row: 1 / span 2;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 1rem;
+  background: #737a48;
+  color: #fffdf8;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+.gift-choice__mark--gift {
+  position: relative;
+}
+
+.gift-choice__mark--gift::before,
+.gift-choice__mark--gift::after {
+  position: absolute;
+  content: "";
+}
+
+.gift-choice__mark--gift::before {
+  width: 1.4rem;
+  height: 1rem;
+  border: 2px solid #fffdf8;
+  border-radius: 0.15rem;
+}
+
+.gift-choice__mark--gift::after {
+  width: 0.2rem;
+  height: 1.35rem;
+  background: #fffdf8;
+  box-shadow: 0 -0.52rem 0 0 #737a48, 0 -0.52rem 0 2px #fffdf8;
+}
+
+.gift-choice strong {
+  padding-right: 1.4rem;
+  color: #6f5a49;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.35rem;
+}
+
+.gift-choice small {
+  grid-column: 2;
+  line-height: 1.55;
+  color: var(--text-soft);
+}
+
+.gift-preference-details {
+  padding: 1.25rem 1.35rem;
+  border: 1px solid rgba(113, 128, 58, 0.2);
+  border-radius: 1.45rem;
+  background: rgba(247, 246, 233, 0.88);
+}
+
+.gift-preference-details .card__title {
+  margin-top: 0.45rem;
+}
+
+.gift-preference-details p:not(.field__label) {
+  margin: 0.35rem 0 0;
+}
+
+.gift-note-field em {
+  font-weight: 400;
+  text-transform: none;
+}
+
+.gift-note-input {
+  min-height: 6.5rem;
+}
+
 .gift-card__mark {
   position: relative;
   display: grid;
@@ -1508,6 +1649,10 @@ main {
   .grid-two,
   .form-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .gift-choice-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .rsvp-seat__details {
