@@ -118,21 +118,14 @@ button {
 }
 
 .hero__video-end {
-  opacity: 0;
   pointer-events: none;
-  transition: opacity 180ms ease;
 }
 
-.hero.is-video-ended .hero__video {
-  opacity: 0;
+.hero__video-end[hidden] {
+  display: none;
 }
 
-.hero.is-video-ended .hero__video-end {
-  opacity: 1;
-}
-
-.hero.is-video-fallback .hero__video,
-.hero.is-video-fallback .hero__video-end {
+.hero.is-video-fallback .hero__video {
   opacity: 0;
   pointer-events: none;
 }

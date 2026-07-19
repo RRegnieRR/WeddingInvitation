@@ -4,6 +4,7 @@
   var audioToggle = document.getElementById("audio-toggle");
   var hero = document.getElementById("top");
   var heroVideo = document.getElementById("hero-video");
+  var heroVideoEnd = document.querySelector(".hero__video-end");
   var scrollProgress = document.querySelector(".scroll-progress");
   var gallery = document.querySelector("[data-gallery]");
   var countdownNodes = {
@@ -246,6 +247,12 @@
       return;
     }
 
+    if (heroVideoEnd) {
+      heroVideoEnd.hidden = true;
+    }
+    if (heroVideo) {
+      heroVideo.hidden = false;
+    }
     hero.classList.add("is-video-fallback");
   }
 
@@ -261,6 +268,10 @@
     hero.dataset.videoFrozen = "true";
     hero.classList.add("is-video-ended");
     heroVideo.pause();
+    heroVideo.hidden = true;
+    if (heroVideoEnd) {
+      heroVideoEnd.hidden = false;
+    }
   }
 
   function setupHeroVideo() {
@@ -284,6 +295,10 @@
     function disableHeroVideo() {
       heroVideo.pause();
       delete hero.dataset.videoFrozen;
+      heroVideo.hidden = false;
+      if (heroVideoEnd) {
+        heroVideoEnd.hidden = true;
+      }
       hero.classList.add("is-video-fallback");
       hero.classList.remove("is-video-ended");
 
@@ -302,6 +317,10 @@
       hero.classList.remove("is-video-fallback");
       hero.classList.remove("is-video-ended");
       delete hero.dataset.videoFrozen;
+      heroVideo.hidden = false;
+      if (heroVideoEnd) {
+        heroVideoEnd.hidden = true;
+      }
 
       if (heroVideo.getAttribute("src") !== introSrc) {
         heroVideo.src = introSrc;
