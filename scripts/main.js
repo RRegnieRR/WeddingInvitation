@@ -389,7 +389,7 @@
     }
 
     function snapToActiveGalleryItem() {
-      var width = stage ? stage.getBoundingClientRect().width : 0;
+      var width = stage ? stage.clientWidth : 0;
       setTrackPosition(activeIndex * width * -1);
     }
 
@@ -423,7 +423,7 @@
       }
 
       var total = getSlideCount();
-      var rect = stage.getBoundingClientRect();
+      var width = stage.clientWidth;
       var deltaX = event.clientX - dragStartX;
       var deltaY = event.clientY - dragStartY;
 
@@ -441,7 +441,7 @@
         dragOffset *= 0.28;
       }
 
-      setTrackPosition(activeIndex * rect.width * -1 + dragOffset);
+      setTrackPosition(activeIndex * width * -1 + dragOffset);
     }
 
     function endGalleryDrag(event) {
@@ -449,8 +449,7 @@
         return;
       }
 
-      var rect = stage.getBoundingClientRect();
-      var threshold = Math.max(rect.width * 0.16, 54);
+      var threshold = Math.max(stage.clientWidth * 0.16, 54);
       isDragging = false;
       stage.classList.remove("is-dragging");
 

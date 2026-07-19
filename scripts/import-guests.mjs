@@ -71,6 +71,10 @@ function slugify(value) {
     .replace(/^-|-$/g, "");
 }
 
+function isSectionLabel(value) {
+  return String(value || "").trim().toLocaleLowerCase("es") === "familia de la novia";
+}
+
 loadLocalEnv();
 
 if (!existsSync(guestListPath)) {
@@ -87,6 +91,8 @@ const spreadsheetRows = XLSX.utils.sheet_to_json(worksheet, {
 });
 const guests = spreadsheetRows
   .map((row) => {
+    const displayName = String(row["Nombre en la invitación"] || "").trim();
+    if (!displayName || isSectionLabel(displayName)) return null;
     const maxAdults = Number(row["Invitaciones adultos"] || 0);
     const maxChildren = Number(row["Invitaciones niños"] || 0);
     const invitationType = maxAdults === 1 && maxChildren === 0
@@ -95,13 +101,13 @@ const guests = spreadsheetRows
         ? "couple"
         : "family";
     return {
-      displayName: String(row["Nombre en la invitación"] || "").trim(),
+      displayName,
       maxAdults,
       maxChildren,
       invitationType,
     };
   })
-  .filter((entry) => entry.displayName);
+  .filter(Boolean);
 const idCounts = new Map();
 const ids = guests.map((guest) => {
   const baseId = slugify(guest.displayName);
@@ -176,7 +182,7 @@ const linkColumn = "Enlace de invitación";
 let invitationIndex = 0;
 spreadsheetRows.forEach((row) => {
   const displayName = String(row["Nombre en la invitación"] || "").trim();
-  if (!displayName) return;
+  if (!displayName || isSectionLabel(displayName)) return;
   const id = ids[invitationIndex];
   invitationIndex += 1;
   const link = links.find((item) => item.id === id);
