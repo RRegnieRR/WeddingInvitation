@@ -614,11 +614,9 @@
       ).map(function (input) {
         return input.value;
       });
-      var noteInput = giftPanel.querySelector("[name='giftNote']");
-
       return {
         preference: selectedValues.length === 2 ? "both" : selectedValues[0] || "",
-        giftNote: selectedValues.includes("gift") && noteInput ? noteInput.value.trim() : "",
+        giftNote: "",
         selectedValues: selectedValues,
       };
     }
@@ -638,8 +636,7 @@
       var savedPreference = invitation.giftPreference || null;
       var preferenceInputs = Array.from(giftForm.querySelectorAll("input[name='giftPreference']"));
       var moneyDetails = giftForm.querySelector(".gift-money-details");
-      var noteField = giftForm.querySelector(".gift-note-field");
-      var noteInput = giftForm.querySelector("[name='giftNote']");
+      var giftPalette = giftForm.querySelector(".gift-color-palette");
 
       preferenceInputs.forEach(function (input) {
         input.checked = Boolean(
@@ -647,8 +644,6 @@
           (savedPreference.preference === "both" || input.value === savedPreference.preference)
         );
       });
-      noteInput.value = savedPreference ? savedPreference.giftNote || "" : "";
-
       function syncGiftChoice() {
         var selectedValues = readGiftSelection().selectedValues;
 
@@ -656,7 +651,7 @@
           choice.classList.toggle("is-active", Boolean(choice.querySelector("input:checked")));
         });
         moneyDetails.hidden = !selectedValues.includes("money");
-        noteField.hidden = !selectedValues.includes("gift");
+        if (giftPalette) giftPalette.hidden = !selectedValues.includes("gift");
       }
 
       if (!giftForm.dataset.bound) {

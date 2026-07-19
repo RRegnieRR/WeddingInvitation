@@ -14,8 +14,8 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <link rel="stylesheet" href="/styles/main.css?v=20260718-10" />
-    <script type="module" src="/scripts/main.js?v=20260718-10"></script>
+    <link rel="stylesheet" href="/styles/main.css?v=20260718-11" />
+    <script type="module" src="/scripts/main.js?v=20260718-11"></script>
   </head>
   <body>
     <div class="scroll-progress" aria-hidden="true"></div>
@@ -330,15 +330,16 @@
           </div>
 
           <div id="gift-bride-family-content" hidden>
-            <p class="section__eyebrow">Regalos · Familia de la novia</p>
+            <p class="section__eyebrow">Regalos</p>
             <h2 class="section__title">Elijan cómo desean acompañarnos</h2>
             <p class="section__text">
-              Con muchísimo cariño, pueden marcar dinero, regalo o las dos opciones.
-              Su elección se guardará junto con la confirmación de asistencia.
+              Con muchísimo cariño, pueden elegir dinero o un regalo.
+              Personalmente preferimos la ayuda financiera, pero si desean tener un
+              detalle con nosotros, verán una paleta de colores que nos encanta.
             </p>
             <div class="gift-preference-form card card--padded" id="gift-preference-form">
               <fieldset class="gift-preference-fieldset">
-                <legend class="field__label">Pueden seleccionar una o las dos opciones</legend>
+                <legend class="field__label">Seleccione la opción que prefieran</legend>
                 <div class="gift-choice-grid">
                   <label class="gift-choice">
                     <input type="checkbox" name="giftPreference" value="money" />
@@ -354,7 +355,7 @@
                       <span></span>
                     </span>
                     <strong>Regalo</strong>
-                    <small>Pueden contarnos qué regalo tienen en mente.</small>
+                    <small>Les mostraremos una paleta de colores que nos encanta.</small>
                   </label>
                 </div>
               </fieldset>
@@ -366,15 +367,23 @@
                 <p>SWIFT: CAIXESBBXXX</p>
               </article>
 
-              <label class="field gift-note-field" hidden>
-                <span class="field__label">Regalo que tienen en mente <em>(opcional)</em></span>
-                <textarea
-                  class="field__input field__textarea gift-note-input"
-                  name="giftNote"
-                  maxlength="500"
-                  placeholder="Pueden dejarnos una pequeña nota sobre el regalo"
-                ></textarea>
-              </label>
+              <article class="gift-color-palette" hidden>
+                <p class="field__label">Colores que nos encantan</p>
+                <div class="gift-palette" aria-label="Paleta en crema, beige y blanco">
+                  <div class="gift-palette__item">
+                    <span class="gift-palette__swatch gift-palette__swatch--cream" aria-hidden="true"></span>
+                    <strong>Crema</strong>
+                  </div>
+                  <div class="gift-palette__item">
+                    <span class="gift-palette__swatch gift-palette__swatch--beige" aria-hidden="true"></span>
+                    <strong>Beige</strong>
+                  </div>
+                  <div class="gift-palette__item">
+                    <span class="gift-palette__swatch gift-palette__swatch--white" aria-hidden="true"></span>
+                    <strong>Blanco</strong>
+                  </div>
+                </div>
+              </article>
 
             </div>
           </div>

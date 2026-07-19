@@ -1037,7 +1037,7 @@ main {
 #gift-bride-family-content[hidden],
 #gift-default-content[hidden],
 .gift-preference-details[hidden],
-.gift-note-field[hidden] {
+.gift-color-palette[hidden] {
   display: none;
 }
 
@@ -1227,13 +1227,52 @@ main {
   margin: 0.35rem 0 0;
 }
 
-.gift-note-field em {
-  font-weight: 400;
-  text-transform: none;
+.gift-color-palette {
+  padding: 1.25rem 1.35rem;
+  border: 1px solid rgba(138, 116, 96, 0.16);
+  border-radius: 1.45rem;
+  background: rgba(255, 254, 250, 0.74);
 }
 
-.gift-note-input {
-  min-height: 6.5rem;
+.gift-palette {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.gift-palette__item {
+  display: grid;
+  gap: 0.55rem;
+  text-align: center;
+}
+
+.gift-palette__swatch {
+  display: block;
+  min-height: 4.5rem;
+  border: 1px solid rgba(111, 90, 73, 0.14);
+  border-radius: 1rem;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.gift-palette__swatch--cream {
+  background: #f4eedf;
+}
+
+.gift-palette__swatch--beige {
+  background: #d9c7aa;
+}
+
+.gift-palette__swatch--white {
+  background: #fff;
+}
+
+.gift-palette__item strong {
+  color: var(--text-soft);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 .gift-card__mark {
