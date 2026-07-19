@@ -1236,7 +1236,7 @@ main {
 
 .gift-palette {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.8rem;
   margin-top: 1rem;
 }
@@ -1267,12 +1267,29 @@ main {
   background: #fff;
 }
 
+.gift-palette__swatch--champagne {
+  background: #ead7b9;
+}
+
+.gift-palette__swatch--taupe {
+  background: #a99582;
+}
+
 .gift-palette__item strong {
   color: var(--text-soft);
   font-size: 0.78rem;
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
+}
+
+.gift-palette__note {
+  max-width: 42rem;
+  margin: 1.25rem auto 0;
+  color: var(--text-soft);
+  font-size: 0.92rem;
+  line-height: 1.65;
+  text-align: center;
 }
 
 .gift-card__mark {
@@ -1797,6 +1814,10 @@ main {
 
   .gift-choice-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .gift-palette {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 
   .rsvp-seat__details {
