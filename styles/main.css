@@ -163,7 +163,6 @@ button {
   margin: 0 auto;
   padding-top: clamp(5.5rem, 14vw, 8.5rem);
   max-width: 21rem;
-  animation: hero-rise 1s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .hero__line {
@@ -171,6 +170,10 @@ button {
   height: 1px;
   margin-bottom: 2.1rem;
   background: var(--line-strong);
+  opacity: 0;
+  transform: scaleX(0);
+  transform-origin: left center;
+  animation: hero-rule-draw 850ms 120ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 .hero__eyebrow,
@@ -189,6 +192,8 @@ button {
   font-size: 0.8rem;
   font-weight: 600;
   color: var(--text-soft);
+  opacity: 0;
+  animation: hero-eyebrow-reveal 900ms 260ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 .hero__names {
@@ -204,23 +209,24 @@ button {
   font-weight: 700;
   opacity: 0;
   line-height: 0.86;
-  animation: hero-name-fade 700ms ease forwards;
+  will-change: opacity, transform, filter;
 }
 
 .hero__name--first {
   font-size: clamp(4.9rem, 11.5vw, 5.9rem);
-  animation-delay: 0.25s;
+  animation: hero-name-first-reveal 1.15s 650ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .hero__name--ampersand {
   margin-left: 0.18rem;
   font-size: clamp(2.9rem, 7.4vw, 3.4rem);
-  animation-delay: 0.7s;
+  transform-origin: 45% 50%;
+  animation: hero-ampersand-reveal 800ms 1.42s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .hero__name--second {
   font-size: clamp(4.45rem, 10.6vw, 5.35rem);
-  animation-delay: 1.05s;
+  animation: hero-name-second-reveal 1.15s 1.68s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .hero__divider {
@@ -228,6 +234,9 @@ button {
   align-items: center;
   gap: 0.95rem;
   margin-top: 2.4rem;
+  opacity: 0;
+  transform: translateY(9px);
+  animation: hero-divider-reveal 850ms 2.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 .hero__divider span {
@@ -250,6 +259,8 @@ button {
   transform: translateX(-50%);
   min-width: 16rem;
   justify-content: center;
+  opacity: 0;
+  animation: hero-cta-reveal 850ms 2.82s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 .button,
@@ -278,9 +289,14 @@ button {
 }
 
 .button:hover,
-.hero__cta:hover,
 .audio-toggle:hover {
   transform: translateY(-2px);
+  background: rgba(254, 254, 254, 0.92);
+  border-color: rgba(138, 116, 96, 0.26);
+}
+
+.hero__cta:hover {
+  transform: translateX(-50%) translateY(-2px);
   background: rgba(254, 254, 254, 0.92);
   border-color: rgba(138, 116, 96, 0.26);
 }
@@ -1774,25 +1790,95 @@ main {
   transform: translate3d(0, 0, 0);
 }
 
-@keyframes hero-rise {
+@keyframes hero-rule-draw {
   from {
     opacity: 0;
-    transform: translate3d(0, 22px, 0);
+    transform: scaleX(0);
   }
 
   to {
     opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes hero-eyebrow-reveal {
+  from {
+    opacity: 0;
+    letter-spacing: 0.52em;
+    transform: translate3d(0, 10px, 0);
+  }
+
+  to {
+    opacity: 1;
+    letter-spacing: 0.36em;
     transform: translate3d(0, 0, 0);
   }
 }
 
-@keyframes hero-name-fade {
+@keyframes hero-name-first-reveal {
   from {
     opacity: 0;
+    filter: blur(5px);
+    transform: translate3d(-22px, 14px, 0) scale(0.96);
   }
 
   to {
     opacity: 1;
+    filter: blur(0);
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes hero-ampersand-reveal {
+  from {
+    opacity: 0;
+    filter: blur(3px);
+    transform: translate3d(-5px, 8px, 0) rotate(-12deg) scale(0.72);
+  }
+
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translate3d(0, 0, 0) rotate(0) scale(1);
+  }
+}
+
+@keyframes hero-name-second-reveal {
+  from {
+    opacity: 0;
+    filter: blur(5px);
+    transform: translate3d(22px, 16px, 0) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes hero-divider-reveal {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 9px, 0) scaleX(0.72);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scaleX(1);
+  }
+}
+
+@keyframes hero-cta-reveal {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
   }
 }
 
@@ -1896,6 +1982,10 @@ main {
   }
 
   .hero__content,
+  .hero__line,
+  .hero__eyebrow,
+  .hero__divider,
+  .hero__cta,
   .reveal,
   .audio-toggle,
   .gallery-stage,
@@ -1907,9 +1997,20 @@ main {
     transition: none;
   }
 
-  .hero__name {
+  .hero__line,
+  .hero__eyebrow,
+  .hero__name,
+  .hero__divider {
     opacity: 1;
     animation: none;
+    filter: none;
+    transform: none;
+  }
+
+  .hero__cta {
+    opacity: 1;
+    animation: none;
+    transform: translateX(-50%);
   }
 
   .reveal {
