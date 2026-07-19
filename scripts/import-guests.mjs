@@ -102,11 +102,13 @@ const guests = spreadsheetRows
     };
   })
   .filter((entry) => entry.displayName);
-const ids = guests.map((guest) => slugify(guest.displayName));
-
-if (new Set(ids).size !== ids.length) {
-  throw new Error("Hay nombres repetidos. Cada invitación debe tener un nombre diferente.");
-}
+const idCounts = new Map();
+const ids = guests.map((guest) => {
+  const baseId = slugify(guest.displayName);
+  const occurrence = (idCounts.get(baseId) || 0) + 1;
+  idCounts.set(baseId, occurrence);
+  return occurrence === 1 ? baseId : `${baseId}-${occurrence}`;
+});
 
 guests.forEach((guest, index) => {
   guest.id = ids[index];
@@ -171,8 +173,12 @@ if (!response.ok) {
 
 writeFileSync(savedLinksPath, `${JSON.stringify(links, null, 2)}\n`);
 const linkColumn = "Enlace de invitación";
+let invitationIndex = 0;
 spreadsheetRows.forEach((row) => {
-  const id = slugify(row["Nombre en la invitación"]);
+  const displayName = String(row["Nombre en la invitación"] || "").trim();
+  if (!displayName) return;
+  const id = ids[invitationIndex];
+  invitationIndex += 1;
   const link = links.find((item) => item.id === id);
   if (link) {
     row["Invitaciones niños"] = link.maxChildren;

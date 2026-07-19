@@ -671,9 +671,8 @@
         '<div class="rsvp-invitation-summary">',
         '<p class="field__label">Invitación para</p>',
         '<h3 class="card__title">' + escapeHtml(invitation.displayName) + "</h3>",
-        isCouple ? '<p class="rsvp-invitation-kind">Invitación de pareja</p>' : "",
-        (!isPersonal || invitation.maxChildren) ? '<div class="rsvp-allocation">' : "",
-        !isPersonal
+        ((!isPersonal && !isCouple) || invitation.maxChildren) ? '<div class="rsvp-allocation">' : "",
+        !isPersonal && !isCouple
           ? '<span><strong>' + invitation.maxAdults + "</strong> " +
             (invitation.maxAdults === 1 ? "adulto" : "adultos") + "</span>"
           : "",
@@ -681,7 +680,7 @@
           ? '<span><strong>' + invitation.maxChildren + "</strong> " +
             (invitation.maxChildren === 1 ? "niño" : "niños") + "</span>"
           : "",
-        (!isPersonal || invitation.maxChildren) ? "</div>" : "",
+        ((!isPersonal && !isCouple) || invitation.maxChildren) ? "</div>" : "",
         priorHelp,
         "</div>",
         '<div class="field">',
