@@ -1153,44 +1153,46 @@ main {
 
 .gift-choice__icon--present > span {
   position: relative;
-  width: 1.8rem;
-  height: 1.35rem;
-  margin-top: 0.4rem;
-  border: 1.7px solid currentColor;
-  border-radius: 0.16rem 0.16rem 0.28rem 0.28rem;
+  width: 2.05rem;
+  height: 1.42rem;
+  margin-top: 0.38rem;
+  border: 1.6px solid #9f8569;
+  border-radius: 0.16rem 0.16rem 0.3rem 0.3rem;
+  background: rgba(255, 250, 243, 0.82);
 }
 
 .gift-choice__icon--present > span::before {
   position: absolute;
-  top: -0.42rem;
-  left: -0.15rem;
-  width: 2.1rem;
-  height: 0.38rem;
-  border: 1.7px solid currentColor;
+  top: -0.4rem;
+  left: -0.14rem;
+  width: 2.22rem;
+  height: 0.36rem;
+  border: 1.6px solid #9f8569;
   border-radius: 0.14rem;
   content: "";
-  background: rgba(246, 241, 227, 0.98);
+  background: #efe2d0;
 }
 
 .gift-choice__icon--present > span::after {
   position: absolute;
-  top: -0.42rem;
+  z-index: 2;
+  top: -0.4rem;
   left: 50%;
-  width: 1.7px;
-  height: 1.76rem;
+  width: 0.2rem;
+  height: 1.8rem;
   content: "";
-  background: currentColor;
+  background: #71803a;
   transform: translateX(-50%);
 }
 
 .gift-choice__icon--present::before {
   position: absolute;
-  z-index: 2;
-  top: 0.73rem;
+  z-index: 3;
+  top: 0.72rem;
   left: 50%;
-  width: 1.05rem;
-  height: 0.46rem;
-  border: 1.7px solid currentColor;
+  width: 1.25rem;
+  height: 0.5rem;
+  border: 0.18rem solid #71803a;
   border-bottom: 0;
   border-radius: 999px 999px 0 0;
   content: "";
@@ -1232,15 +1234,6 @@ main {
 
 .gift-note-input {
   min-height: 6.5rem;
-}
-
-.gift-save-note {
-  margin: 0;
-  padding-top: 0.15rem;
-  color: var(--text-soft);
-  font-size: 0.88rem;
-  line-height: 1.65;
-  text-align: center;
 }
 
 .gift-card__mark {
