@@ -242,20 +242,6 @@
     }
   }
 
-  function fallbackHeroVideo() {
-    if (!hero) {
-      return;
-    }
-
-    if (heroVideoEnd) {
-      heroVideoEnd.hidden = true;
-    }
-    if (heroVideo) {
-      heroVideo.hidden = false;
-    }
-    hero.classList.add("is-video-fallback");
-  }
-
   function freezeHeroVideo() {
     if (!hero || !heroVideo) {
       return;
@@ -287,7 +273,7 @@
 
       if (promise && typeof promise.catch === "function") {
         promise.catch(function () {
-          fallbackHeroVideo();
+          freezeHeroVideo();
         });
       }
     }
@@ -310,7 +296,7 @@
 
     function enableHeroVideo() {
       if (!introSrc) {
-        fallbackHeroVideo();
+        freezeHeroVideo();
         return;
       }
 
@@ -343,7 +329,7 @@
     }
 
     heroVideo.addEventListener("ended", freezeHeroVideo);
-    heroVideo.addEventListener("error", fallbackHeroVideo, { once: true });
+    heroVideo.addEventListener("error", freezeHeroVideo, { once: true });
     heroVideo.loop = false;
     syncHeroMediaMode();
 
