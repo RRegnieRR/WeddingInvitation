@@ -746,7 +746,7 @@
       });
     }
 
-    function nameField(slot, index, label) {
+    function nameField(slot) {
       if (slot.invitedName) {
         return [
           '<label class="choice rsvp-fixed-guest rsvp-name-slot' + (slot.selected ? " choice--active" : "") +
@@ -759,10 +759,10 @@
       }
 
       return [
-        '<label class="field rsvp-name-slot" data-slot="' + slot.slot + '" data-type="' + slot.type + '">',
-        '<span class="field__label">' + label + " " + (index + 1) + "</span>",
-        '<input class="field__input" type="text" name="guestName" value="' +
-          escapeHtml(slot.name) + '" placeholder="Nombre completo" />',
+        '<label class="rsvp-floating-field rsvp-name-slot" data-slot="' + slot.slot + '" data-type="' + slot.type + '">',
+        '<input class="field__input rsvp-floating-field__input" type="text" name="guestName" value="' +
+          escapeHtml(slot.name) + '" placeholder=" " />',
+        '<span class="rsvp-floating-field__label">Nombre completo</span>',
         "</label>",
       ].join("");
     }
@@ -824,8 +824,8 @@
         '<span class="rsvp-adult-count"></span>',
         "</div>",
         '<div class="rsvp-name-list">' +
-          adultSlots.map(function (slot, index) {
-            return nameField(slot, index, "Adulto");
+          adultSlots.map(function (slot) {
+            return nameField(slot);
           }).join("") +
         "</div>",
         "</div>",
@@ -838,8 +838,8 @@
               '<span class="rsvp-child-count"></span>',
               "</div>",
               '<div class="rsvp-name-list">' +
-                childSlots.map(function (slot, index) {
-                  return nameField(slot, index, "Niño");
+                childSlots.map(function (slot) {
+                  return nameField(slot);
                 }).join("") +
                 "</div>",
               "</div>",

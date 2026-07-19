@@ -1531,7 +1531,51 @@ main {
 
 .rsvp-name-list {
   display: grid;
-  gap: 0.9rem;
+  gap: 0.55rem;
+}
+
+.rsvp-floating-field {
+  position: relative;
+  display: block;
+  min-width: 0;
+}
+
+.rsvp-floating-field__input {
+  min-height: 3.7rem;
+  padding: 1.45rem 0 0.5rem;
+  border: 0;
+  border-bottom: 1px solid rgba(138, 116, 96, 0.24);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.rsvp-floating-field__input:focus {
+  border-color: #71803a;
+  background: transparent;
+}
+
+.rsvp-floating-field__label {
+  position: absolute;
+  top: 1.15rem;
+  left: 0;
+  color: var(--text-soft);
+  font-size: 1rem;
+  line-height: 1;
+  pointer-events: none;
+  transform-origin: left top;
+  transition: top 220ms ease, color 220ms ease, font-size 220ms ease,
+    letter-spacing 220ms ease, transform 220ms ease;
+}
+
+.rsvp-floating-field__input:focus + .rsvp-floating-field__label,
+.rsvp-floating-field__input:not(:placeholder-shown) + .rsvp-floating-field__label {
+  top: 0.25rem;
+  color: #71803a;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
 }
 
 .rsvp-seat-heading {
@@ -1781,7 +1825,8 @@ main {
   .gallery-stage,
   .gallery-stage__track,
   .gallery-thumb,
-  .gallery-thumb img {
+  .gallery-thumb img,
+  .rsvp-floating-field__label {
     animation: none;
     transition: none;
   }
