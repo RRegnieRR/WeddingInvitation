@@ -14,8 +14,8 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <link rel="stylesheet" href="/styles/main.css?v=20260718-04" />
-    <script type="module" src="/scripts/main.js?v=20260718-04"></script>
+    <link rel="stylesheet" href="/styles/main.css?v=20260718-05" />
+    <script type="module" src="/scripts/main.js?v=20260718-05"></script>
   </head>
   <body>
     <div class="scroll-progress" aria-hidden="true"></div>
@@ -333,31 +333,25 @@
             <p class="section__eyebrow">Regalos · Familia de la novia</p>
             <h2 class="section__title">Elijan cómo desean acompañarnos</h2>
             <p class="section__text">
-              Con muchísimo cariño, pueden elegir dinero, un regalo o ambas opciones.
+              Con muchísimo cariño, pueden marcar dinero, regalo o las dos opciones.
               Su elección quedará guardada en esta invitación y podrán cambiarla después.
             </p>
             <form class="gift-preference-form card card--padded" id="gift-preference-form">
               <input class="rsvp-form__hidden" type="text" name="website" autocomplete="off" tabindex="-1" />
               <fieldset class="gift-preference-fieldset">
-                <legend class="field__label">¿Qué les gustaría obsequiarnos?</legend>
+                <legend class="field__label">Pueden seleccionar una o las dos opciones</legend>
                 <div class="gift-choice-grid">
                   <label class="gift-choice">
-                    <input type="radio" name="giftPreference" value="money" />
+                    <input type="checkbox" name="giftPreference" value="money" />
                     <span class="gift-choice__mark" aria-hidden="true">$</span>
                     <strong>Dinero</strong>
                     <small>Les mostraremos nuestros datos bancarios.</small>
                   </label>
                   <label class="gift-choice">
-                    <input type="radio" name="giftPreference" value="gift" />
+                    <input type="checkbox" name="giftPreference" value="gift" />
                     <span class="gift-choice__mark gift-choice__mark--gift" aria-hidden="true"></span>
                     <strong>Regalo</strong>
                     <small>Pueden contarnos qué regalo tienen en mente.</small>
-                  </label>
-                  <label class="gift-choice">
-                    <input type="radio" name="giftPreference" value="both" />
-                    <span class="gift-choice__mark" aria-hidden="true">+</span>
-                    <strong>Ambos</strong>
-                    <small>Dinero y un regalo para acompañarnos.</small>
                   </label>
                 </div>
               </fieldset>

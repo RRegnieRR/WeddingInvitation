@@ -604,19 +604,31 @@
       giftForm.dataset.inviteCode = code;
 
       preferenceInputs.forEach(function (input) {
-        input.checked = Boolean(savedPreference && input.value === savedPreference.preference);
+        input.checked = Boolean(
+          savedPreference &&
+          (savedPreference.preference === "both" || input.value === savedPreference.preference)
+        );
       });
       noteInput.value = savedPreference ? savedPreference.giftNote || "" : "";
 
+      function getSelectedGiftValues() {
+        return preferenceInputs
+          .filter(function (input) {
+            return input.checked;
+          })
+          .map(function (input) {
+            return input.value;
+          });
+      }
+
       function syncGiftChoice() {
-        var selected = giftForm.querySelector("input[name='giftPreference']:checked");
-        var value = selected ? selected.value : "";
+        var selectedValues = getSelectedGiftValues();
 
         giftForm.querySelectorAll(".gift-choice").forEach(function (choice) {
           choice.classList.toggle("is-active", Boolean(choice.querySelector("input:checked")));
         });
-        moneyDetails.hidden = value !== "money" && value !== "both";
-        noteField.hidden = value !== "gift" && value !== "both";
+        moneyDetails.hidden = !selectedValues.includes("money");
+        noteField.hidden = !selectedValues.includes("gift");
       }
 
       if (!giftForm.dataset.bound) {
@@ -627,12 +639,14 @@
 
         giftForm.addEventListener("submit", async function (event) {
           event.preventDefault();
-          var selected = giftForm.querySelector("input[name='giftPreference']:checked");
+          var selectedValues = getSelectedGiftValues();
 
-          if (!selected) {
-            setFormStatus(giftForm, "error", "Seleccionen dinero, regalo o ambas opciones.");
+          if (!selectedValues.length) {
+            setFormStatus(giftForm, "error", "Seleccionen dinero, regalo o las dos opciones.");
             return;
           }
+
+          var preference = selectedValues.length === 2 ? "both" : selectedValues[0];
 
           giftSubmitButton.disabled = true;
           giftSubmitButton.textContent = "Guardando...";
@@ -645,8 +659,8 @@
               body: JSON.stringify({
                 code: giftForm.dataset.inviteCode,
                 website: giftForm.elements.website.value,
-                preference: selected.value,
-                giftNote: selected.value === "gift" || selected.value === "both"
+                preference: preference,
+                giftNote: selectedValues.includes("gift")
                   ? noteInput.value.trim()
                   : "",
               }),
