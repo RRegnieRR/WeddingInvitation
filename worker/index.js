@@ -135,7 +135,7 @@ async function handleRsvp(request, env) {
   const invitation = await findInvitation(env.DB, code);
   if (!invitation) return json({ ok: false, message: "No encontramos esta invitación. Revisa el enlace que recibiste." }, 404);
   const rsvp = await env.DB.prepare("SELECT * FROM rsvps WHERE invitation_id = ? LIMIT 1").bind(invitation.id).first();
-  const giftPreference = isBrideFamily(invitation)
+  let giftPreference = isBrideFamily(invitation)
     ? await findGiftPreference(env.DB, invitation.id)
     : null;
   if (request.method === "GET") return json({ ok: true, invitation: publicInvitation(invitation, rsvp, giftPreference) });
@@ -144,10 +144,26 @@ async function handleRsvp(request, env) {
   if (!['yes', 'no'].includes(attendance)) return json({ ok: false, message: "Selecciona si podrán acompañarnos." }, 400);
   const guestResult = validateGuests(payload, invitation, attendance);
   if (guestResult.error) return json({ ok: false, message: guestResult.error }, 400);
+  const includesGiftPreference = Object.prototype.hasOwnProperty.call(payload, "giftPreference");
+  const preference = cleanText(payload.giftPreference, 12);
+  if (isBrideFamily(invitation) && includesGiftPreference && preference && !["money", "gift", "both"].includes(preference)) {
+    return json({ ok: false, message: "Seleccionen dinero, regalo o las dos opciones." }, 400);
+  }
+  const giftNote = preference === "gift" || preference === "both"
+    ? cleanText(payload.giftNote, 500)
+    : "";
   const updatedAt = new Date().toISOString();
-  await env.DB.prepare("INSERT INTO rsvps (invitation_id, attendance, adult_count, child_count, guests, message, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT(invitation_id) DO UPDATE SET attendance=excluded.attendance, adult_count=excluded.adult_count, child_count=excluded.child_count, guests=excluded.guests, message=excluded.message, updated_at=excluded.updated_at")
-    .bind(invitation.id, attendance === "yes" ? 1 : 0, guestResult.adultCount, guestResult.childCount, JSON.stringify(guestResult.guests), cleanText(payload.message, 1000), updatedAt).run();
+  const statements = [env.DB.prepare("INSERT INTO rsvps (invitation_id, attendance, adult_count, child_count, guests, message, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT(invitation_id) DO UPDATE SET attendance=excluded.attendance, adult_count=excluded.adult_count, child_count=excluded.child_count, guests=excluded.guests, message=excluded.message, updated_at=excluded.updated_at")
+    .bind(invitation.id, attendance === "yes" ? 1 : 0, guestResult.adultCount, guestResult.childCount, JSON.stringify(guestResult.guests), cleanText(payload.message, 1000), updatedAt)];
+  if (isBrideFamily(invitation) && includesGiftPreference) {
+    statements.push(preference
+      ? env.DB.prepare("INSERT INTO gift_preferences (invitation_id, preference, gift_note, updated_at) VALUES (?, ?, ?, ?) ON CONFLICT(invitation_id) DO UPDATE SET preference=excluded.preference, gift_note=excluded.gift_note, updated_at=excluded.updated_at")
+        .bind(invitation.id, preference, giftNote, updatedAt)
+      : env.DB.prepare("DELETE FROM gift_preferences WHERE invitation_id = ?").bind(invitation.id));
+  }
+  await env.DB.batch(statements);
   const saved = await env.DB.prepare("SELECT * FROM rsvps WHERE invitation_id = ? LIMIT 1").bind(invitation.id).first();
+  if (isBrideFamily(invitation)) giftPreference = await findGiftPreference(env.DB, invitation.id);
   return json({ ok: true, message: "Su confirmación se guardó correctamente.", invitation: publicInvitation(invitation, saved, giftPreference) });
 }
 

@@ -32,6 +32,19 @@ class MockStatement {
         gift_note: giftNote,
         updated_at: updatedAt,
       });
+    } else if (this.sql.startsWith("DELETE FROM gift_preferences")) {
+      this.db.giftPreferences.delete(this.bindings[0]);
+    } else if (this.sql.startsWith("INSERT INTO rsvps")) {
+      const [invitationId, attendance, adultCount, childCount, guests, message, updatedAt] = this.bindings;
+      this.db.rsvps.set(invitationId, {
+        invitation_id: invitationId,
+        attendance,
+        adult_count: adultCount,
+        child_count: childCount,
+        guests,
+        message,
+        updated_at: updatedAt,
+      });
     }
     return { success: true };
   }
@@ -44,7 +57,7 @@ class MockStatement {
       return this.db.giftPreferences.get(this.bindings[0]) || null;
     }
     if (this.sql.startsWith("SELECT * FROM rsvps")) {
-      return null;
+      return this.db.rsvps.get(this.bindings[0]) || null;
     }
     return null;
   }
@@ -54,6 +67,7 @@ class MockD1 {
   constructor() {
     this.invitations = new Map();
     this.giftPreferences = new Map();
+    this.rsvps = new Map();
   }
 
   prepare(sql) {
@@ -104,6 +118,27 @@ const savedLookup = await jsonResponse(new Request(
   "https://wedding.test/api/rsvp?code=B25BF43BF3DF",
 ));
 assert.equal(savedLookup.body.invitation.giftPreference.preference, "both");
+
+const combinedSave = await jsonResponse(new Request(
+  "https://wedding.test/api/rsvp",
+  {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      code: "B25BF43BF3DF",
+      attendance: "yes",
+      guests: [{ type: "adult", slot: 0, name: "Magdalena" }],
+      message: "Ahí estaremos",
+      giftPreference: "money",
+      giftNote: "Esta nota debe limpiarse",
+      website: "",
+    }),
+  },
+));
+assert.equal(combinedSave.response.status, 200);
+assert.equal(combinedSave.body.invitation.rsvp.attendance, "yes");
+assert.equal(combinedSave.body.invitation.giftPreference.preference, "money");
+assert.equal(combinedSave.body.invitation.giftPreference.giftNote, "");
 
 const regularLookup = await jsonResponse(new Request(
   "https://wedding.test/api/rsvp?code=STACEY123",

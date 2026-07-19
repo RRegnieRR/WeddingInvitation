@@ -14,8 +14,8 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <link rel="stylesheet" href="/styles/main.css?v=20260718-07" />
-    <script type="module" src="/scripts/main.js?v=20260718-07"></script>
+    <link rel="stylesheet" href="/styles/main.css?v=20260718-08" />
+    <script type="module" src="/scripts/main.js?v=20260718-08"></script>
   </head>
   <body>
     <div class="scroll-progress" aria-hidden="true"></div>
@@ -334,10 +334,9 @@
             <h2 class="section__title">Elijan cómo desean acompañarnos</h2>
             <p class="section__text">
               Con muchísimo cariño, pueden marcar dinero, regalo o las dos opciones.
-              Su elección quedará guardada en esta invitación y podrán cambiarla después.
+              Su elección se guardará junto con la confirmación de asistencia.
             </p>
-            <form class="gift-preference-form card card--padded" id="gift-preference-form">
-              <input class="rsvp-form__hidden" type="text" name="website" autocomplete="off" tabindex="-1" />
+            <div class="gift-preference-form card card--padded" id="gift-preference-form">
               <fieldset class="gift-preference-fieldset">
                 <legend class="field__label">Pueden seleccionar una o las dos opciones</legend>
                 <div class="gift-choice-grid">
@@ -377,11 +376,10 @@
                 ></textarea>
               </label>
 
-              <div class="rsvp-form__footer">
-                <button class="button button--solid" type="submit">Guardar elección</button>
-                <p class="rsvp-form__status" hidden aria-live="polite"></p>
-              </div>
-            </form>
+              <p class="gift-save-note">
+                Todo se guardará al pulsar “Enviar confirmación” al final de la invitación.
+              </p>
+            </div>
           </div>
         </div>
       </section>

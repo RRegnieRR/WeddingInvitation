@@ -583,6 +583,24 @@
       if (brideContent) brideContent.hidden = true;
     }
 
+    function readGiftSelection() {
+      var giftPanel = document.getElementById("gift-preference-form");
+      if (!giftPanel) return { preference: "", giftNote: "", selectedValues: [] };
+
+      var selectedValues = Array.from(
+        giftPanel.querySelectorAll("input[name='giftPreference']:checked"),
+      ).map(function (input) {
+        return input.value;
+      });
+      var noteInput = giftPanel.querySelector("[name='giftNote']");
+
+      return {
+        preference: selectedValues.length === 2 ? "both" : selectedValues[0] || "",
+        giftNote: selectedValues.includes("gift") && noteInput ? noteInput.value.trim() : "",
+        selectedValues: selectedValues,
+      };
+    }
+
     function renderGiftExperience(code, invitation) {
       var defaultContent = document.getElementById("gift-default-content");
       var brideContent = document.getElementById("gift-bride-family-content");
@@ -599,9 +617,7 @@
       var preferenceInputs = Array.from(giftForm.querySelectorAll("input[name='giftPreference']"));
       var moneyDetails = giftForm.querySelector(".gift-money-details");
       var noteField = giftForm.querySelector(".gift-note-field");
-      var noteInput = giftForm.elements.giftNote;
-      var giftSubmitButton = giftForm.querySelector("button[type='submit']");
-      giftForm.dataset.inviteCode = code;
+      var noteInput = giftForm.querySelector("[name='giftNote']");
 
       preferenceInputs.forEach(function (input) {
         input.checked = Boolean(
@@ -611,18 +627,8 @@
       });
       noteInput.value = savedPreference ? savedPreference.giftNote || "" : "";
 
-      function getSelectedGiftValues() {
-        return preferenceInputs
-          .filter(function (input) {
-            return input.checked;
-          })
-          .map(function (input) {
-            return input.value;
-          });
-      }
-
       function syncGiftChoice() {
-        var selectedValues = getSelectedGiftValues();
+        var selectedValues = readGiftSelection().selectedValues;
 
         giftForm.querySelectorAll(".gift-choice").forEach(function (choice) {
           choice.classList.toggle("is-active", Boolean(choice.querySelector("input:checked")));
@@ -636,58 +642,8 @@
         preferenceInputs.forEach(function (input) {
           input.addEventListener("change", syncGiftChoice);
         });
-
-        giftForm.addEventListener("submit", async function (event) {
-          event.preventDefault();
-          var selectedValues = getSelectedGiftValues();
-
-          if (!selectedValues.length) {
-            setFormStatus(giftForm, "error", "Seleccionen dinero, regalo o las dos opciones.");
-            return;
-          }
-
-          var preference = selectedValues.length === 2 ? "both" : selectedValues[0];
-
-          giftSubmitButton.disabled = true;
-          giftSubmitButton.textContent = "Guardando...";
-          setFormStatus(giftForm, "", "");
-
-          try {
-            var response = await fetch("/api/gift-preference", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                code: giftForm.dataset.inviteCode,
-                website: giftForm.elements.website.value,
-                preference: preference,
-                giftNote: selectedValues.includes("gift")
-                  ? noteInput.value.trim()
-                  : "",
-              }),
-            });
-            var result = await response.json().catch(function () {
-              return {};
-            });
-
-            if (!response.ok || !result.ok) {
-              throw new Error(result.message || "No pudimos guardar su elección.");
-            }
-
-            setFormStatus(
-              giftForm,
-              "success",
-              "Gracias. Su elección de regalo quedó guardada y pueden cambiarla cuando quieran.",
-            );
-          } catch (error) {
-            setFormStatus(giftForm, "error", error.message);
-          } finally {
-            giftSubmitButton.disabled = false;
-            giftSubmitButton.textContent = "Guardar elección";
-          }
-        });
       }
 
-      setFormStatus(giftForm, "", "");
       syncGiftChoice();
     }
 
@@ -770,6 +726,7 @@
     function renderInvitation(code, invitation) {
       var isPersonal = invitation.invitationType === "personal";
       var isCouple = invitation.invitationType === "couple";
+      var isBrideFamily = invitation.guestGroup === "bride_family";
       var adultSlots = isPersonal ? [] : buildNameSlots(invitation, "adult", invitation.maxAdults);
       var childSlots = buildNameSlots(invitation, "child", invitation.maxChildren);
       var attendance = invitation.rsvp ? invitation.rsvp.attendance : "yes";
@@ -941,6 +898,7 @@
         setFormStatus(personalForm, "", "");
 
         try {
+          var giftSelection = isBrideFamily ? readGiftSelection() : null;
           var saveResponse = await fetch(personalRsvpEndpoint, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -950,6 +908,8 @@
               attendance: attending,
               guests: guests,
               message: personalForm.elements.message.value.trim(),
+              giftPreference: giftSelection ? giftSelection.preference : undefined,
+              giftNote: giftSelection ? giftSelection.giftNote : undefined,
             }),
           });
           var saveResult = await saveResponse.json().catch(function () {
@@ -960,11 +920,14 @@
             throw new Error(saveResult.message || "No pudimos guardar su confirmación.");
           }
 
+          renderGiftExperience(code, saveResult.invitation);
           renderInvitation(code, saveResult.invitation);
           setFormStatus(
             rsvpApp.querySelector("#rsvp-form"),
             "success",
-            "Gracias. Su confirmación quedó guardada y pueden actualizarla desde este mismo enlace.",
+            isBrideFamily
+              ? "Gracias. Su confirmación y elección de regalo quedaron guardadas y pueden actualizarlas desde este mismo enlace."
+              : "Gracias. Su confirmación quedó guardada y pueden actualizarla desde este mismo enlace.",
           );
         } catch (error) {
           personalSubmitButton.disabled = false;
